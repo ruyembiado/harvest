@@ -21,7 +21,7 @@ const customTheme = {
   },
 };
 
-export default function Index() {
+export default function Register() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 
@@ -66,9 +66,9 @@ export default function Index() {
             </Button>
 
             <Text>
-              Don't have an account?
-              <Link href="/register" style={GlobalStyles.registerLink}>
-                Register here
+              Already have an account?
+              <Link href="/" style={GlobalStyles.registerLink}>
+                Login here
               </Link>
             </Text>
           </Card.Content>
