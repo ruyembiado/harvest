@@ -4,22 +4,12 @@ import {
   Provider as PaperProvider,
   Text,
   TextInput,
-  DefaultTheme,
   Card,
   Button,
 } from "react-native-paper";
 import { Link } from "expo-router";
 import GlobalStyles from "../assets/styles/styles";
-
-const customTheme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: "#4CAF50", // Green for buttons and outlines
-    text: "#008640", // Green for text
-    background: "#F3F4F6", // Soft gray background
-  },
-};
+import customTheme from "../assets/styles/theme";
 
 export default function Index() {
   const [email, setEmail] = React.useState("");
@@ -71,6 +61,9 @@ export default function Index() {
                 Register here
               </Link>
             </Text>
+            <Link href="/terms" style={GlobalStyles.registerLink}>
+                Terms
+              </Link>
           </Card.Content>
         </Card>
       </View>
