@@ -17,18 +17,18 @@ return [
 
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['*'], // Allow all HTTP methods (GET, POST, PUT, etc.)
 
-    'allowed_origins' => ['http://192.168.156.6:8081'],
+    'allowed_origins' => ['*'], // Allow all origins. Replace '*' with specific domains if needed.
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['*'],
+    'allowed_headers' => ['*'], // Allow all headers.
 
     'exposed_headers' => [],
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => false, // Set to true if yo
 
 ];

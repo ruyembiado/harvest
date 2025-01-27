@@ -21,3 +21,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::middleware('auth.jwt')->get('/api/protected', [AuthController::class, 'protectedRoute']);
+//  remove routes
+//  php artisan route:list | Where-Object { $_ -notmatch "/api" } 
+//  add routes
+//  after you add routes add this command
+//  php artisan route:list --path=api

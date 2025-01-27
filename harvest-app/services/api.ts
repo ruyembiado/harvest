@@ -1,11 +1,21 @@
-import axios from 'axios';
+import axios from "axios";
 
-const axiosInstance = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api', 
+const api = axios.create({
+  baseURL: "http://192.168.156.6:8000/api", // Replace with your IP if testing on a device
   headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
+    "Content-Type": "application/json",
+    Accept: "application/json",
   },
 });
 
-export default axiosInstance;
+// Add interceptor to catch errors globally
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Handle global API errors
+    console.error("Error:", error.response?.data || error.message);
+    return Promise.reject(error);
+  }
+);
+
+export default api;

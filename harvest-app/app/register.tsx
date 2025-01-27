@@ -12,13 +12,13 @@ import GlobalStyles from "../assets/styles/styles";
 import customTheme from "../assets/styles/theme";
 import api from "../services/api";
 
-export default function Register() {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [name, setName] = React.useState("");
-  const [phone_number, setPhoneNumber] = React.useState("");
-  const [confirm_pass, setConfirmPass] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
+const Register: React.FC = () => {
+  const [email, setEmail] = React.useState<string>("");
+  const [password, setPassword] = React.useState<string>("");
+  const [name, setName] = React.useState<string>("");
+  const [phone, setPhoneNumber] = React.useState<string>("");
+  const [confirm_pass, setConfirmPass] = React.useState<string>("");
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   const handleRegister = async () => {
     if (password !== confirm_pass) {
@@ -26,7 +26,7 @@ export default function Register() {
       return;
     }
 
-    if (!email || !password || !name || !phone_number) {
+    if (!email || !password || !name || !phone) {
       alert("Please fill in all fields.");
       return;
     }
@@ -37,7 +37,7 @@ export default function Register() {
       const response = await api.post("/register", {
         name,
         email,
-        phone_number,
+        phone,
         password,
       });
 
@@ -78,8 +78,8 @@ export default function Register() {
             />
             <TextInput
               label="Phone Number"
-              value={phone_number}
-              onChangeText={(phone_number) => setPhoneNumber(phone_number)}
+              value={phone}
+              onChangeText={(phone) => setPhoneNumber(phone)}
               mode="outlined"
               style={GlobalStyles.input}
               keyboardType="number-pad"
@@ -108,7 +108,7 @@ export default function Register() {
               mode="contained"
               onPress={handleRegister}
               style={GlobalStyles.button}
-              loading={loading}  // Show loading spinner when registering
+              loading={loading} // Show loading spinner when registering
               disabled={loading} // Disable the button while loading
             >
               Register
@@ -125,4 +125,5 @@ export default function Register() {
       </View>
     </PaperProvider>
   );
-}
+};
+export default Register;
