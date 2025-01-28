@@ -8,8 +8,8 @@ export default function RootLayout() {
     <PaperProvider>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: "tomato",
-          tabBarInactiveTintColor: "gray",
+          tabBarActiveTintColor: "#4CAF50",
+          tabBarInactiveTintColor: "#808080",
         }}
       >
         <Tabs.Screen

@@ -26,8 +26,20 @@ const Register: React.FC = () => {
       return;
     }
 
-    if (!email || !password || !name || !phone) {
-      alert("Please fill in all fields.");
+    if (!email) {
+      alert("Email is required.");
+      return;
+    }
+    if (!password) {
+      alert("Password is required.");
+      return;
+    }
+    if (!name) {
+      alert("Name is required.");
+      return;
+    }
+    if (!phone) {
+      alert("Phone is required.");
       return;
     }
 
@@ -42,7 +54,12 @@ const Register: React.FC = () => {
       });
 
       console.log("User:", response.data.user);
-      // You can handle success like redirecting or showing success message here
+      setName("");
+      setEmail("");
+      setPhoneNumber("");
+      setPassword("");
+      setConfirmPass("");
+      alert(response.data.message);
     } catch (error) {
       console.error("Registration error:", error);
       alert("Registration failed. Please try again.");
