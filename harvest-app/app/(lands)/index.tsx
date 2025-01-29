@@ -16,22 +16,45 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function Index() {
   return (
     <PaperProvider theme={customTheme}>
-      <View style={GlobalStyles.RiceLandContainer}>
-        <Card style={GlobalStyles.RiceLandCard}>
-          <Card.Content>
-            <Text variant="headlineLarge" style={GlobalStyles.title}>
+      <Card style={GlobalStyles.RiceLandCard}>
+        <Card.Content>
+          <View style={GlobalStyles.RiceLandContainer}>
+            <Text
+              variant="headlineLarge"
+              style={[
+                GlobalStyles.title,
+              ]}
+            >
               Rice Lands
             </Text>
             <View>
               <Button
                 mode="contained"
-                style={[GlobalStyles.addButton, { marginBottom: 20 }]}
+                style={[
+                  GlobalStyles.addButton,
+                  { marginBottom: 20, marginTop: 20 },
+                ]}
               >
-                Add
+                <Link href="/(lands)/add_land">Add</Link>
               </Button>
               <ScrollView
                 contentContainerStyle={GlobalStyles.RiceLandScrollContainer}
+                showsVerticalScrollIndicator={false}
               >
+                <Link href="/(tabs)">
+                  <ImageBackground
+                    source={require("../../assets/images/rice-field.jpg")}
+                    style={GlobalStyles.RiceLandItem}
+                  >
+                    <Button
+                      mode="contained"
+                      style={[GlobalStyles.deleteButton]}
+                    >
+                      Delete
+                    </Button>
+                    <Text style={GlobalStyles.RiceLandTitle}>AMAR</Text>
+                  </ImageBackground>
+                </Link>
                 <Link href="/(tabs)">
                   <ImageBackground
                     source={require("../../assets/images/rice-field.jpg")}
@@ -115,9 +138,9 @@ export default function Index() {
                 </Link>
               </ScrollView>
             </View>
-          </Card.Content>
-        </Card>
-      </View>
+          </View>
+        </Card.Content>
+      </Card>
     </PaperProvider>
   );
 }

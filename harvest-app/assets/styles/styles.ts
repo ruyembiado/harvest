@@ -6,33 +6,54 @@ const globalStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#F3F4F6", 
+    backgroundColor: "#F3F4F6",
+  },
+  RiceLandTitle: {
+    color: "#000",
+    zIndex: 1,
+    fontWeight: 700,
+    textShadowColor: "#fff",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 5,
+    fontSize: 30,
+    textAlign: "center",
   },
 
   RiceLandScrollContainer: {
-    flexGrow: 1,
     gap: 10,
-    paddingBottom: 20
   },
+
+  titleHeaderContainer: {
+    backgroundColor: "#4CAF50",
+    paddingTop: 20,
+    paddingBottom: 20,
+  },
+
   RiceLandItem: {
     height: 200,
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
+    borderWidth: 3,
+    borderColor: "#4CAF50", 
+    borderRadius: 10,
+    overflow: "hidden", 
+  },
+
+  whiteTitle: {
+    color: "#fff",
+    textAlign: "center",
   },
 
   RiceLandContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    paddingTop: 25,
+    height: 560,
   },
 
   RiceLandCard: {
     width: "100%",
     height: "100%",
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-    backgroundColor: "#FFFFFF", 
+    backgroundColor: "#FFFFFF",
     borderRadius: 0,
   },
 
@@ -58,7 +79,9 @@ const globalStyles = StyleSheet.create({
   button: {
     marginTop: 5,
     marginBottom: 10,
-    paddingVertical: 8,
+    alignContent: "center",
+    height: 50, 
+    justifyContent: "center",
   },
   addButton: {
     marginTop: 5,
@@ -81,7 +104,7 @@ const globalStyles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   textCenter: {
-    textAlign: "center", 
+    textAlign: "center",
   },
   TermsButtonContainer: {
     paddingTop: 50,

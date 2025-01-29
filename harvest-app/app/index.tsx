@@ -30,6 +30,17 @@ const Index: React.FC = () => {
   }, []);
 
   const handleLogin = async () => {
+    if (!email) {
+      alert("Email is required.");
+      return;
+    }
+    if (!password) {
+      alert("Password is required.");
+      return;
+    }
+
+    setLoading(true);
+
     try {
       const response = await api.post("/login", {
         email,
@@ -44,6 +55,8 @@ const Index: React.FC = () => {
     } catch (error) {
       console.error("Login error:", error);
       Alert.alert("Login failed.Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
