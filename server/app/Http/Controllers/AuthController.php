@@ -31,8 +31,7 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'User registered successfully',
                 'user' => $user,
-            ], 201);
-
+            ], 200);
         } catch (Exception $ex) {
             return response()->json([
                 'error' => $ex->getMessage(),
@@ -48,7 +47,12 @@ class AuthController extends Controller
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
 
-        return response()->json(['token' => $token], 200);
+        $user = auth()->user();
+
+        return response()->json([
+            'token' => $token,
+            'user_id' => $user->id
+        ], 200);
     }
 
     public function protectedRoute()

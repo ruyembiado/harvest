@@ -15,7 +15,7 @@ import customTheme from "../../assets/styles/theme";
 import api from "../../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const AddLand: React.FC = () => {
+const UpdateLand: React.FC = () => {
   const [rice_land_name, setRiceLandName] = useState<string>("");
   const [rice_land_lat, setRiceLandLat] = useState<string>("");
   const [rice_land_long, setRiceLandLong] = useState<string>("");
@@ -53,7 +53,7 @@ const AddLand: React.FC = () => {
     setLocationLoading(false);
   };
 
-  const handleAddRiceLand = async () => {
+  const handleUpdateLand = async () => {
     if (!rice_land_name) {
       alert("Rice land name is required.");
       return;
@@ -204,7 +204,7 @@ const AddLand: React.FC = () => {
             style={GlobalStyles.button}
             loading={loading}
             disabled={loading}
-            onPress={handleAddRiceLand}
+            onPress={handleUpdateLand}
           >
             Add Land
           </Button>
@@ -214,4 +214,4 @@ const AddLand: React.FC = () => {
   );
 };
 
-export default AddLand;
+export default UpdateLand;

@@ -35,9 +35,9 @@ const globalStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 3,
-    borderColor: "#4CAF50", 
+    borderColor: "#4CAF50",
     borderRadius: 10,
-    overflow: "hidden", 
+    overflow: "hidden",
   },
 
   whiteTitle: {
@@ -46,8 +46,38 @@ const globalStyles = StyleSheet.create({
   },
 
   RiceLandContainer: {
-    paddingTop: 25,
     height: 560,
+  },
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F3F4F6",
+  },
+
+  moreOptionsButtonContainer: {
+    position: "absolute", 
+    top: 10,
+    right: 10,
+    padding: 0,
+    borderRadius: 99,
+  },
+
+  menuButton: {
+    backgroundColor: "#4CAF50",
+    color: "#fff",
+  },
+
+  activityIndicator: {
+    color: "#4CAF50"
+  },
+
+  TitleContainer: {
+    paddingTop: 20,
+    backgroundColor: "#FFFF",
+    borderBottomColor: "#d8d8d8",
+    borderBottomWidth: 1,
   },
 
   RiceLandCard: {
@@ -55,6 +85,26 @@ const globalStyles = StyleSheet.create({
     height: "100%",
     backgroundColor: "#FFFFFF",
     borderRadius: 0,
+  },
+
+  FormContainer: {
+    paddingTop: 10,
+  },
+
+  noDataText: {
+    textAlign: "center",
+    marginTop: 20,
+    fontSize: 20,
+    backgroundColor: "#A6A6A6",
+    padding: 20,
+  },
+
+  noDataTextContainer: {
+    height: 500,
+
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   card: {
@@ -80,7 +130,7 @@ const globalStyles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 10,
     alignContent: "center",
-    height: 50, 
+    height: 50,
     justifyContent: "center",
   },
   addButton: {

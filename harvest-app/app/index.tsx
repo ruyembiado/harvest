@@ -48,7 +48,11 @@ const Index: React.FC = () => {
       });
 
       const token = response.data.token;
+      const user_id = response.data.user_id;
       await AsyncStorage.setItem("authToken", token);
+      await AsyncStorage.setItem("user_id", user_id);
+
+      console.log("User ID:", user_id);
 
       router.replace("/(condition)");
       Alert.alert("Login Successfully.");

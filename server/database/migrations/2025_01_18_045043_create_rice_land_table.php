@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rice_land', function (Blueprint $table) {
+        Schema::create('rice_lands', function (Blueprint $table) {
             $table->id();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('rice_land_name');
             $table->string('rice_land_lat');
             $table->string('rice_land_long');
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rice_land');
+        Schema::dropIfExists('rice_lands');
     }
 };
