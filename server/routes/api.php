@@ -23,8 +23,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Authentcation
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/logout', [AuthController::class, 'logout']);
 
 // Rice Lands
 Route::post('/add_rice_land', [RiceLandController::class, 'add_rice_land']);
-Route::post('/rice_lands/{user_id}', [RiceLandController::class, 'get_rice_lands_by_user_id']);
-Route::delete('/rice_lands/{rice_land_id}/{user_id}', [RiceLandController::class, 'delete_rice_land_by_id']);
+Route::post('/rice_lands', [RiceLandController::class, 'get_rice_lands_by_user_id']);
+Route::get('/get_rice_land/{id}', [RiceLandController::class, 'get_rice_land']);
+Route::post('/update_rice_land', [RiceLandController::class, 'update_rice_land']);
+Route::delete('/delete_rice_land', [RiceLandController::class, 'delete_rice_land_by_id']);

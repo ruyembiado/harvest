@@ -8,6 +8,36 @@ const globalStyles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#F3F4F6",
   },
+
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+
+  weatherContainer: {
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  weatherIcon: {
+    width: 80, 
+    height: 80,
+  },
+  weatherText: {
+    fontSize: 18,
+    marginTop: 10,
+  },
+
+  dataText: {
+    fontSize: 16,
+    color: "#333",
+    fontWeight: "400",
+    marginBottom: 5,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 5,
+  },
   RiceLandTitle: {
     color: "#000",
     zIndex: 1,
@@ -21,6 +51,19 @@ const globalStyles = StyleSheet.create({
 
   RiceLandScrollContainer: {
     gap: 10,
+  },
+
+  mainDetailContainer : {
+    backgroundColor: '#ffff',
+    shadowColor: '#FFD700',     
+    shadowOffset: { width: 0, height: 4 },  
+    shadowOpacity: 0.5,      
+    shadowRadius: 10,       
+    borderRadius: 30,
+    width: "100%",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginBottom: 10,
   },
 
   titleHeaderContainer: {
@@ -57,7 +100,7 @@ const globalStyles = StyleSheet.create({
   },
 
   moreOptionsButtonContainer: {
-    position: "absolute", 
+    position: "absolute",
     top: 10,
     right: 10,
     padding: 0,

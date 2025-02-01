@@ -8,23 +8,25 @@ import {
   ActivityIndicator,
 } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
-import { Link, useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import * as Location from "expo-location";
 import GlobalStyles from "../../assets/styles/styles";
 import customTheme from "../../assets/styles/theme";
 import api from "../../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import getUserIdOrLogout from "@/hooks/getUserIdOrLogout";
 
 const UpdateLand: React.FC = () => {
-  const [rice_land_name, setRiceLandName] = useState<string>("");
-  const [rice_land_lat, setRiceLandLat] = useState<string>("");
-  const [rice_land_long, setRiceLandLong] = useState<string>("");
-  const [rice_land_size, setRiceLandSize] = useState<string>("");
-  const [rice_land_condition, setRiceLandCondition] = useState<string>("");
-  const [rice_land_current_stage, setRiceLandStage] = useState<string>("not_yet_started");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [locationLoading, setLocationLoading] = useState<boolean>(false);
+  const [rice_land_name, setRiceLandName] = React.useState<string>("");
+  const [rice_land_lat, setRiceLandLat] = React.useState<string>("");
+  const [rice_land_long, setRiceLandLong] = React.useState<string>("");
+  const [rice_land_size, setRiceLandSize] = React.useState<string>("");
+  const [rice_land_condition, setRiceLandCondition] = React.useState<string>("");
+  const [rice_land_current_stage, setRiceLandStage] = React.useState<string>("");
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [locationLoading, setLocationLoading] = React.useState<boolean>(false);
   const router = useRouter();
+  const { id } = useLocalSearchParams();
 
   const riceLandConditions = [
     { label: "-- Select Condition --", value: "" },
@@ -35,6 +37,15 @@ const UpdateLand: React.FC = () => {
 
   const riceLandStages = [
     { label: "Not Yet Started", value: "not_yet_started" },
+    { label: "Germination", value: "germination" },
+    { label: "Seeding Establishment", value: "seeding_establishment" },
+    { label: "Tillering", value: "tillering" },
+    { label: "Panicle Initiation", value: "panicle_initiation" },
+    { label: "Booting", value: "booting" },
+    { label: "Heading", value: "heading" },
+    { label: "Flowering", value: "flowering" },
+    { label: "Grain Filling", value: "grain_filling" },
+    { label: "Maturity", value: "maturity" },
   ];
 
   // Fetch current location
@@ -52,6 +63,31 @@ const UpdateLand: React.FC = () => {
     setRiceLandLong(location.coords.longitude.toString());
     setLocationLoading(false);
   };
+
+  // Fetch rice land details for editing
+  useEffect(() => {
+    setLoading(true);
+    const fetchLandDetails = async () => {
+      if (!id) return;
+      try {
+        const response = await api.get(`/get_rice_land/${id}`);
+        const data = response.data;
+
+        setRiceLandName(data.rice_land_name);
+        setRiceLandLat(data.rice_land_lat);
+        setRiceLandLong(data.rice_land_long);
+        setRiceLandSize(data.rice_land_size);
+        setRiceLandCondition(data.rice_land_condition);
+        setRiceLandStage(data.rice_land_current_stage);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching land details:", error);
+        Alert.alert("Error", "Unable to fetch land details.");
+      }
+    };
+
+    fetchLandDetails();
+  }, [id]);
 
   const handleUpdateLand = async () => {
     if (!rice_land_name) {
@@ -74,8 +110,13 @@ const UpdateLand: React.FC = () => {
     setLoading(true);
 
     try {
-      const user_id = await AsyncStorage.getItem("user_id");
-      const response = await api.post("/add_rice_land", {
+      const user_id = await getUserIdOrLogout(router);
+      if (!user_id) {
+        return;
+      }
+
+      const response = await api.post(`/update_rice_land/`, {
+        id,
         user_id,
         rice_land_name,
         rice_land_lat,
@@ -85,28 +126,37 @@ const UpdateLand: React.FC = () => {
         rice_land_current_stage,
       });
 
-      router.replace("/(lands)");
-      Alert.alert("Rice land added Successfully.");
+      Alert.alert("Success", "Rice land updated successfully.");
+      router.replace("/(lands)"); // Navigate back to the list of lands
     } catch (error) {
-      console.error("Add error:", error);
-      Alert.alert("Add failed.Please try again.");
+      console.error("Update error:", error);
+      Alert.alert("Update failed", "Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  if (loading) {
+    return (
+      <View style={GlobalStyles.loadingContainer}>
+        <ActivityIndicator
+          animating={true}
+          size="large"
+          color={GlobalStyles.activityIndicator.color}
+        />
+      </View>
+    );
+  }
+
   return (
     <PaperProvider theme={customTheme}>
       <View style={[GlobalStyles.TitleContainer]}>
         <Text variant="headlineLarge" style={[GlobalStyles.title]}>
-          Add Rice Land
+          Update Rice Land
         </Text>
       </View>
       <ScrollView
-        contentContainerStyle={[
-          GlobalStyles.RiceLandScrollContainer,
-          { paddingLeft: 20, paddingRight: 20 },
-        ]}
+        contentContainerStyle={[GlobalStyles.RiceLandScrollContainer, { paddingLeft: 20, paddingRight: 20 }]}
       >
         <View style={[GlobalStyles.FormContainer]}>
           <View>
@@ -123,6 +173,7 @@ const UpdateLand: React.FC = () => {
           <View>
             <Text>Location:</Text>
             <TextInput
+              disabled
               label="Enter location (Latitude)"
               value={rice_land_lat}
               onChangeText={setRiceLandLat}
@@ -132,6 +183,7 @@ const UpdateLand: React.FC = () => {
             />
 
             <TextInput
+              disabled
               label="Enter location (Longitude)"
               value={rice_land_long}
               onChangeText={setRiceLandLong}
@@ -140,7 +192,7 @@ const UpdateLand: React.FC = () => {
               keyboardType="numeric"
             />
 
-            <Button
+            {/* <Button
               style={[GlobalStyles.button, { marginBottom: 10 }]}
               mode="outlined"
               onPress={fetchLocation}
@@ -148,10 +200,8 @@ const UpdateLand: React.FC = () => {
               disabled={locationLoading}
               icon={locationLoading ? undefined : "crosshairs-gps"}
             >
-              {locationLoading
-                ? "Fetching Location..."
-                : "Get Current Location"}
-            </Button>
+              {locationLoading ? "Fetching Location..." : "Get Current Location"}
+            </Button> */}
           </View>
 
           <View>
@@ -164,6 +214,19 @@ const UpdateLand: React.FC = () => {
               style={GlobalStyles.input}
               keyboardType="numeric"
             />
+          </View>
+
+          <View>
+            <Text>Select Land Condition:</Text>
+            <Picker
+              selectedValue={rice_land_condition}
+              onValueChange={(itemValue) => setRiceLandCondition(itemValue)}
+              style={{ height: 50, width: 250 }}
+            >
+              {riceLandConditions.map((condition) => (
+                <Picker.Item label={condition.label} value={condition.value} key={condition.value} />
+              ))}
+            </Picker>
           </View>
 
           <View>
@@ -181,32 +244,15 @@ const UpdateLand: React.FC = () => {
             />
           </View>
 
-          <View>
-            <Text>Select Land Condition:</Text>
-            <Picker
-              selectedValue={rice_land_condition}
-              onValueChange={(itemValue) => setRiceLandCondition(itemValue)}
-              style={{ height: 50, width: 250 }}
-            >
-              {riceLandConditions.map((condition) => (
-                <Picker.Item
-                  label={condition.label}
-                  value={condition.value}
-                  key={condition.value}
-                />
-              ))}
-            </Picker>
-          </View>
-
           <Button
-            icon="plus"
+            icon="update"
             mode="contained"
             style={GlobalStyles.button}
             loading={loading}
             disabled={loading}
             onPress={handleUpdateLand}
           >
-            Add Land
+            Update Land
           </Button>
         </View>
       </ScrollView>

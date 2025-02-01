@@ -55,8 +55,13 @@ class AuthController extends Controller
         ], 200);
     }
 
-    public function protectedRoute()
+    public function logout(Request $request)
     {
-        return response()->json(['message' => 'You have access to this route.']);
+        try {
+            JWTAuth::invalidate(JWTAuth::getToken());
+            return response()->json(['message' => 'Successfully logged out'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to logout, please try again.'], 500);
+        }
     }
 }

@@ -13,7 +13,7 @@ import GlobalStyles from "../../assets/styles/styles";
 import customTheme from "../../assets/styles/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function Index() {
+const Index: React.FC = () => {
   const [checkbox, setChecked] = React.useState<Boolean>(false);
 
   useEffect(() => {
@@ -68,3 +68,4 @@ export default function Index() {
     </PaperProvider>
   );
 }
+export default Index;

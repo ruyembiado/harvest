@@ -15,23 +15,25 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../../services/api";
 import customTheme from "../../assets/styles/theme";
 import { Link, useRouter } from "expo-router";
+import getUserIdOrLogout from "@/hooks/getUserIdOrLogout";
 
 const Index: React.FC = () => {
-  const [riceLands, setRiceLands] = useState<Array<any>>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [visible, setVisible] = useState(false); // State to control Menu visibility
-  const [selectedLandId, setSelectedLandId] = useState<string | null>(null); // State for the selected land
+  const [riceLands, setRiceLands] = React.useState<Array<any>>([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [visible, setVisible] = React.useState(false); // State to control Menu visibility
+  const [selectedLandId, setSelectedLandId] = React.useState<string | null>(null); // State for the selected land
   const router = useRouter();
 
   const fetchRiceLands = async () => {
     try {
-      const userId = await AsyncStorage.getItem("user_id");
-      if (!userId) {
-        console.error("User ID not found.");
+      const user_id = await getUserIdOrLogout(router);
+      if (!user_id) {
         return;
       }
 
-      const response = await api.post(`/rice_lands/${userId}`);
+      const response = await api.post("/rice_lands", {
+        user_id,
+      });
 
       if (response.status === 200) {
         console.log("Rice Lands:", response.data.lands);
@@ -48,9 +50,8 @@ const Index: React.FC = () => {
 
   const deleteRiceLand = async (id: string) => {
     try {
-      const userId = await AsyncStorage.getItem("user_id");
-      if (!userId) {
-        console.error("User ID not found.");
+      const user_id = await getUserIdOrLogout(router);
+      if (!user_id) {
         return;
       }
 
@@ -67,7 +68,12 @@ const Index: React.FC = () => {
             style: "destructive",
             onPress: async () => {
               setLoading(true);
-              const response = await api.delete(`/rice_lands/${id}/${userId}`);
+              const response = await api.delete("/delete_rice_land/", {
+                data: {
+                  id,
+                  user_id
+                }
+              });
               if (response.status === 200) {
                 alert("Rice land deleted successfully!");
                 console.log("Rice land deleted successfully!");
@@ -131,6 +137,7 @@ const Index: React.FC = () => {
                         source={require("../../assets/images/rice-field.jpg")}
                         style={GlobalStyles.RiceLandItem}
                       >
+                        <View style={GlobalStyles.overlay}></View>
                         <View style={[GlobalStyles.moreOptionsButtonContainer]}>
                           <Menu
                             visible={visible && selectedLandId === land.id}
@@ -151,8 +158,26 @@ const Index: React.FC = () => {
                               onPress={() => {
                                 setVisible(false);
                                 router.push(
+                                  `/(tabs)/?id=${land.id}`
+                                );
+                              }}
+                              title="View"
+                            />
+                            <Menu.Item
+                              onPress={() => {
+                                setVisible(false);
+                                router.push(
+                                  `/(lands)/view_land?id=${land.id}`
+                                );
+                              }}
+                              title="Details"
+                            />
+                            <Menu.Item
+                              onPress={() => {
+                                setVisible(false);
+                                router.push(
                                   `/(lands)/update_land?id=${land.id}`
-                                ); // Navigate to the update page
+                                );
                               }}
                               title="Update"
                             />
@@ -160,7 +185,7 @@ const Index: React.FC = () => {
                             <Menu.Item
                               onPress={() => {
                                 setVisible(false);
-                                deleteRiceLand(land.id); // Trigger delete action
+                                deleteRiceLand(land.id);
                               }}
                               title="Delete"
                             />

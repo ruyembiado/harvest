@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Alert } from "react-native";
 import {
   Provider as PaperProvider,
   Text,
@@ -62,7 +62,7 @@ const Register: React.FC = () => {
       alert(response.data.message);
     } catch (error) {
       console.error("Registration error:", error);
-      alert("Registration failed. Please try again.");
+      Alert.alert("Registration failed", "Please try again.");
     } finally {
       setLoading(false);
     }

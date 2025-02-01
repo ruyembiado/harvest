@@ -50,7 +50,7 @@ const Index: React.FC = () => {
       const token = response.data.token;
       const user_id = response.data.user_id;
       await AsyncStorage.setItem("authToken", token);
-      await AsyncStorage.setItem("user_id", user_id);
+      await AsyncStorage.setItem("user_id", String(user_id));
 
       console.log("User ID:", user_id);
 
@@ -58,7 +58,7 @@ const Index: React.FC = () => {
       Alert.alert("Login Successfully.");
     } catch (error) {
       console.error("Login error:", error);
-      Alert.alert("Login failed.Please try again.");
+      Alert.alert("Invalid Credentials", "Please try again.");
     } finally {
       setLoading(false);
     }

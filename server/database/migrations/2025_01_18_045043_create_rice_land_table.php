@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('rice_lands', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('rice_land_name');
             $table->string('rice_land_lat');

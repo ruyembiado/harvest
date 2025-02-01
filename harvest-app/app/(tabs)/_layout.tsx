@@ -19,6 +19,7 @@ export default function RootLayout() {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="home-outline" size={size} color={color} />
             ),
+            headerTitleAlign: "center",
           }}
         />
 
@@ -29,6 +30,8 @@ export default function RootLayout() {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="calendar-outline" size={size} color={color} />
             ),
+            headerTitle: "Calendar",
+            headerTitleAlign: "center",
           }}
         />
 
@@ -39,6 +42,8 @@ export default function RootLayout() {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="cloudy-outline" size={size} color={color} />
             ),
+            headerTitle: "Weather",
+            headerTitleAlign: "center",
           }}
         />
 
@@ -53,6 +58,8 @@ export default function RootLayout() {
                 color={color}
               />
             ),
+            headerTitle: "Notes",
+            headerTitleAlign: "center",
           }}
         />
       </Tabs>

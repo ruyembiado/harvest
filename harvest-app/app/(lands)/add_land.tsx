@@ -14,16 +14,17 @@ import GlobalStyles from "../../assets/styles/styles";
 import customTheme from "../../assets/styles/theme";
 import api from "../../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import getUserIdOrLogout from "@/hooks/getUserIdOrLogout";
 
 const AddLand: React.FC = () => {
-  const [rice_land_name, setRiceLandName] = useState<string>("");
-  const [rice_land_lat, setRiceLandLat] = useState<string>("");
-  const [rice_land_long, setRiceLandLong] = useState<string>("");
-  const [rice_land_size, setRiceLandSize] = useState<string>("");
-  const [rice_land_condition, setRiceLandCondition] = useState<string>("");
-  const [rice_land_current_stage, setRiceLandStage] = useState<string>("not_yet_started");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [locationLoading, setLocationLoading] = useState<boolean>(false);
+  const [rice_land_name, setRiceLandName] = React.useState<string>("");
+  const [rice_land_lat, setRiceLandLat] = React.useState<string>("");
+  const [rice_land_long, setRiceLandLong] = React.useState<string>("");
+  const [rice_land_size, setRiceLandSize] = React.useState<string>("");
+  const [rice_land_condition, setRiceLandCondition] = React.useState<string>("");
+  const [rice_land_current_stage, setRiceLandStage] = React.useState<string>("not_yet_started");
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [locationLoading, setLocationLoading] = React.useState<boolean>(false);
   const router = useRouter();
 
   const riceLandConditions = [
@@ -74,7 +75,11 @@ const AddLand: React.FC = () => {
     setLoading(true);
 
     try {
-      const user_id = await AsyncStorage.getItem("user_id");
+      const user_id = await getUserIdOrLogout(router);
+      if (!user_id) {
+        return;
+      }
+      
       const response = await api.post("/add_rice_land", {
         user_id,
         rice_land_name,
