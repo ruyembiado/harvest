@@ -20,8 +20,10 @@ import getUserIdOrLogout from "@/hooks/getUserIdOrLogout";
 const Index: React.FC = () => {
   const [riceLands, setRiceLands] = React.useState<Array<any>>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
-  const [visible, setVisible] = React.useState(false); 
-  const [selectedLandId, setSelectedLandId] = React.useState<string | null>(null); 
+  const [visible, setVisible] = React.useState(false); // State to control Menu visibility
+  const [selectedLandId, setSelectedLandId] = React.useState<string | null>(
+    null
+  ); // State for the selected land
   const router = useRouter();
 
   const fetchRiceLands = async () => {
@@ -71,8 +73,8 @@ const Index: React.FC = () => {
               const response = await api.delete("/delete_rice_land/", {
                 data: {
                   id,
-                  user_id
-                }
+                  user_id,
+                },
               });
               if (response.status === 200) {
                 alert("Rice land deleted successfully!");
@@ -113,7 +115,7 @@ const Index: React.FC = () => {
     <PaperProvider theme={customTheme}>
       <View style={[GlobalStyles.TitleContainer]}>
         <Text variant="headlineLarge" style={[GlobalStyles.title]}>
-          Rice Lands
+          Rice Variety
         </Text>
       </View>
       <Card style={GlobalStyles.RiceLandCard}>
@@ -124,7 +126,7 @@ const Index: React.FC = () => {
                 mode="contained"
                 style={[GlobalStyles.addButton, { marginBottom: 20 }]}
               >
-                <Link href="/(lands)/add_land">Add</Link>
+                <Link href="/(rices)/add_rice">Add</Link>
               </Button>
               <ScrollView
                 contentContainerStyle={GlobalStyles.RiceLandScrollContainer}
@@ -157,13 +159,11 @@ const Index: React.FC = () => {
                             <Menu.Item
                               onPress={() => {
                                 setVisible(false);
-                                router.push(
-                                  `/(tabs)/?id=${land.id}`
-                                );
+                                router.push(`/(tabs)/?id=${land.id}`);
                               }}
                               title="View"
                             />
-                            <Menu.Item
+                            {/* <Menu.Item
                               onPress={() => {
                                 setVisible(false);
                                 router.push(
@@ -171,7 +171,7 @@ const Index: React.FC = () => {
                                 );
                               }}
                               title="Details"
-                            />
+                            /> */}
                             <Menu.Item
                               onPress={() => {
                                 setVisible(false);
@@ -200,7 +200,7 @@ const Index: React.FC = () => {
                 ) : (
                   <View style={[GlobalStyles.noDataTextContainer]}>
                     <Text style={[GlobalStyles.noDataText]}>
-                      No rice lands available.
+                      No rice variety.
                     </Text>
                   </View>
                 )}

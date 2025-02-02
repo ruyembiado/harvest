@@ -1,5 +1,5 @@
 import { View, Alert } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams, Link } from "expo-router";
 import React, { useState, useEffect } from "react";
 import api from "@/services/api";
 import GlobalStyles from "@/assets/styles/styles";
@@ -24,8 +24,10 @@ export default function Index() {
   const [rice_land_lat, setRiceLandLat] = React.useState<string>("");
   const [rice_land_long, setRiceLandLong] = React.useState<string>("");
   const [rice_land_size, setRiceLandSize] = React.useState<string>("");
-  const [rice_land_condition, setRiceLandCondition] = React.useState<string>("");
-  const [rice_land_current_stage, setRiceLandStage] = React.useState<string>("");
+  const [rice_land_condition, setRiceLandCondition] =
+    React.useState<string>("");
+  const [rice_land_current_stage, setRiceLandStage] =
+    React.useState<string>("");
   const [weatherLoading, setWeatherLoading] = useState<boolean>(false);
   const [weatherData, setWeatherData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -64,7 +66,7 @@ export default function Index() {
     if (rice_land_lat && rice_land_long) {
       reverseGeocodeExpo(parseFloat(rice_land_lat), parseFloat(rice_land_long));
     }
-  }, [rice_land_lat, rice_land_long]); 
+  }, [rice_land_lat, rice_land_long]);
 
   const reverseGeocodeExpo = async (lat: number, lng: number) => {
     try {
@@ -74,11 +76,18 @@ export default function Index() {
         return;
       }
 
-      let result = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng });
+      let result = await Location.reverseGeocodeAsync({
+        latitude: lat,
+        longitude: lng,
+      });
 
       if (result.length > 0) {
         let place = result[0];
-        setPlaceName(`${place.city || "Unknown place"}, ${place.region || "Unknown region"}, ${place.country || "Unknown country"}`);
+        setPlaceName(
+          `${place.city || "Unknown place"}, ${
+            place.region || "Unknown region"
+          }, ${place.country || "Unknown country"}`
+        );
       } else {
         setPlaceName("Place not found");
       }
@@ -162,31 +171,69 @@ export default function Index() {
   };
 
   const currentDate = new Date();
-  const formattedDate = currentDate.toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  const formattedDate = currentDate.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
   return (
     <PaperProvider theme={customTheme}>
-      <View style={[GlobalStyles.container, { alignItems: "flex-start", justifyContent: "flex-start" }]}>
+      <View
+        style={[
+          GlobalStyles.container,
+          { alignItems: "flex-start", justifyContent: "flex-start" },
+        ]}
+      >
         {loading ? (
-          <ActivityIndicator size="small" color={GlobalStyles.activityIndicator.color} />
+          <ActivityIndicator
+            size="small"
+            color={GlobalStyles.activityIndicator.color}
+          />
         ) : (
           <>
             {weatherLoading ? (
-              <ActivityIndicator size="small" color={GlobalStyles.activityIndicator.color} />
+              <ActivityIndicator
+                size="small"
+                color={GlobalStyles.activityIndicator.color}
+              />
             ) : weatherData ? (
               <>
-                <View style={{ flexDirection: "column", alignItems: "flex-end", justifyContent: "center", alignSelf: "flex-end", marginBottom: 10 }}>
-                  <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+                <View
+                  style={{
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                    justifyContent: "center",
+                    alignSelf: "flex-end",
+                    marginBottom: 10,
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
                     <Text style={[GlobalStyles.dataText]}>{formattedDate}</Text>
                   </View>
-                  <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 5 }}>
-                    <Icon name={getWeatherIcon(weatherData.weathercode)} size={40} color="#FFD700" />
-                    <Text style={[GlobalStyles.dataText, { fontSize: 28 }]}>{weatherData.temperature}°C</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 5,
+                    }}
+                  >
+                    <Icon
+                      name={getWeatherIcon(weatherData.weathercode)}
+                      size={40}
+                      color="#FFD700"
+                    />
+                    <Text style={[GlobalStyles.dataText, { fontSize: 28 }]}>
+                      {weatherData.temperature}°C
+                    </Text>
                   </View>
                 </View>
                 <View style={[GlobalStyles.mainDetailContainer]}>
@@ -195,7 +242,9 @@ export default function Index() {
                 </View>
                 <View style={[GlobalStyles.mainDetailContainer]}>
                   <Text style={GlobalStyles.label}>LAND SIZE:</Text>
-                  <Text style={[GlobalStyles.dataText]}>{rice_land_size} Hectares</Text>
+                  <Text style={[GlobalStyles.dataText]}>
+                    {rice_land_size} Hectares
+                  </Text>
                 </View>
                 <View style={[GlobalStyles.mainDetailContainer]}>
                   <Text style={GlobalStyles.label}>LAND CODITION:</Text>
@@ -218,7 +267,9 @@ export default function Index() {
                   mode="contained"
                   style={GlobalStyles.button}
                 >
-                  Rice Varieties
+                  <Link href="/(rices)" style={{  }}>
+                    Rice Variety
+                  </Link>
                 </Button>
               </>
             ) : (
