@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Button } from 'react-native-paper';
 
-const NotesScreen: React.FC = () => {
+const WeatherScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>This is the Weather Screen!</Text>
@@ -25,4 +25,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NotesScreen;
+export default WeatherScreen;

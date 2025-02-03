@@ -20,6 +20,7 @@ import * as Location from "expo-location";
 
 export default function Index() {
   const [placeName, setPlaceName] = React.useState<string>("Fetching place...");
+  const [rice_land_id, setRiceLandId] = React.useState<string>("");
   const [rice_land_name, setRiceLandName] = React.useState<string>("");
   const [rice_land_lat, setRiceLandLat] = React.useState<string>("");
   const [rice_land_long, setRiceLandLong] = React.useState<string>("");
@@ -103,6 +104,8 @@ export default function Index() {
     try {
       const response = await api.get(`/get_rice_land/${id}`);
       const data = response.data;
+      console.log(data);
+      setRiceLandId(data.id);
       setRiceLandName(data.rice_land_name);
       setRiceLandLat(data.rice_land_lat);
       setRiceLandLong(data.rice_land_long);
@@ -183,21 +186,27 @@ export default function Index() {
       <View
         style={[
           GlobalStyles.container,
-          { alignItems: "flex-start", justifyContent: "flex-start" },
+          { alignItems: "center", justifyContent: "flex-start" },
         ]}
       >
         {loading ? (
-          <ActivityIndicator
-            size="small"
-            color={GlobalStyles.activityIndicator.color}
-          />
+          <View style={GlobalStyles.loadingContainer}>
+            <ActivityIndicator
+              animating={true}
+              size="large"
+              color={GlobalStyles.activityIndicator.color}
+            />
+          </View>
         ) : (
           <>
             {weatherLoading ? (
-              <ActivityIndicator
-                size="small"
-                color={GlobalStyles.activityIndicator.color}
-              />
+              <View style={GlobalStyles.loadingContainer}>
+                <ActivityIndicator
+                  animating={true}
+                  size="large"
+                  color={GlobalStyles.activityIndicator.color}
+                />
+              </View>
             ) : weatherData ? (
               <>
                 <View
@@ -265,10 +274,25 @@ export default function Index() {
                 <Button
                   icon="seed"
                   mode="contained"
-                  style={GlobalStyles.button}
+                  style={[GlobalStyles.button, { width: "100%" }]}
                 >
-                  <Link href="/(rices)" style={{  }}>
+                  <Link
+                    href={`/(rices)?rice_land_id=${rice_land_id}`}
+                    style={{}}
+                  >
                     Rice Variety
+                  </Link>
+                </Button>
+                <Button
+                  icon={getWeatherIcon(weatherData.weathercode)}
+                  mode="contained"
+                  style={[GlobalStyles.button, { width: "100%", backgroundColor: "#FBBC04" }]}
+                >
+                  <Link
+                    href={`/(rices)?rice_land_id=${rice_land_id}`}
+                    style={{}}
+                  >
+                    Advisories
                   </Link>
                 </Button>
               </>

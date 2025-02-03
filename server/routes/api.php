@@ -2,8 +2,10 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AICoontroller;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RiceLandController;
+use App\Http\Controllers\RiceVarietyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,3 +33,11 @@ Route::post('/rice_lands', [RiceLandController::class, 'get_rice_lands_by_user_i
 Route::get('/get_rice_land/{id}', [RiceLandController::class, 'get_rice_land']);
 Route::post('/update_rice_land', [RiceLandController::class, 'update_rice_land']);
 Route::delete('/delete_rice_land', [RiceLandController::class, 'delete_rice_land_by_id']);
+
+// Rice Varieties
+Route::post('/add_rice_variety', [RiceVarietyController::class, 'add_rice_variety']);
+Route::get('/get_rice_variety/{id}', [RiceVarietyController::class, 'get_variety_by_rice_land_id']);
+Route::delete('/delete_rice_variety', [RiceVarietyController::class, 'delete_rice_land_by_id']);
+
+// AI
+Route::post('/generate-stage-growth-schedule', [AICoontroller::class, 'generate_stage_growth_schedule']);

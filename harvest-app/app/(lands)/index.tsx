@@ -20,12 +20,15 @@ import getUserIdOrLogout from "@/hooks/getUserIdOrLogout";
 const Index: React.FC = () => {
   const [riceLands, setRiceLands] = React.useState<Array<any>>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
-  const [visible, setVisible] = React.useState(false); 
-  const [selectedLandId, setSelectedLandId] = React.useState<string | null>(null); 
+  const [visible, setVisible] = React.useState(false);
+  const [selectedLandId, setSelectedLandId] = React.useState<string | null>(
+    null
+  );
   const router = useRouter();
 
   const fetchRiceLands = async () => {
     try {
+
       const user_id = await getUserIdOrLogout(router);
       if (!user_id) {
         return;
@@ -71,8 +74,8 @@ const Index: React.FC = () => {
               const response = await api.delete("/delete_rice_land/", {
                 data: {
                   id,
-                  user_id
-                }
+                  user_id,
+                },
               });
               if (response.status === 200) {
                 alert("Rice land deleted successfully!");
@@ -157,13 +160,11 @@ const Index: React.FC = () => {
                             <Menu.Item
                               onPress={() => {
                                 setVisible(false);
-                                router.push(
-                                  `/(tabs)/?id=${land.id}`
-                                );
+                                router.push(`/(tabs)/?id=${land.id}`);
                               }}
                               title="View"
                             />
-                            <Menu.Item
+                            {/* <Menu.Item
                               onPress={() => {
                                 setVisible(false);
                                 router.push(
@@ -171,7 +172,7 @@ const Index: React.FC = () => {
                                 );
                               }}
                               title="Details"
-                            />
+                            /> */}
                             <Menu.Item
                               onPress={() => {
                                 setVisible(false);

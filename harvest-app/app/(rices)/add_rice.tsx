@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
 } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
-import { Link, useRouter } from "expo-router";
+import { Link, useRouter, useLocalSearchParams } from "expo-router";
 import * as Location from "expo-location";
 import GlobalStyles from "../../assets/styles/styles";
 import customTheme from "../../assets/styles/theme";
@@ -17,9 +17,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import getUserIdOrLogout from "@/hooks/getUserIdOrLogout";
 
 const AddRice: React.FC = () => {
-  const [rice_variety, setRiceVariety] = React.useState<string>("");
+  const [rice_variety_name, setRiceVariety] = React.useState<string>("");
   const [loading, setLoading] = React.useState<boolean>(false);
   const router = useRouter();
+  const { rice_land_id } = useLocalSearchParams();
 
   const riceVarities = [
     { label: "-- Select Variety --", value: "" },
@@ -30,7 +31,7 @@ const AddRice: React.FC = () => {
   ];
 
   const handleAddRiceVariety = async () => {
-    if (!rice_variety) {
+    if (!rice_variety_name) {
       alert("Rice land name is required.");
       return;
     }
@@ -43,9 +44,13 @@ const AddRice: React.FC = () => {
         return;
       }
 
+      if (!rice_land_id) {
+        return;
+      }
+
       const response = await api.post("/add_rice_variety", {
-        user_id,
-        rice_variety,
+        rice_land_id,
+        rice_variety_name,
       });
 
       router.replace("/(rices)");
@@ -75,7 +80,7 @@ const AddRice: React.FC = () => {
           <View>
             <Text>Select Rice Variety:</Text>
             <Picker
-              selectedValue={rice_variety}
+              selectedValue={rice_variety_name}
               onValueChange={(itemValue) => setRiceVariety(itemValue)}
               style={{ height: 50, width: 250 }}
             >
