@@ -23,28 +23,30 @@ const ViewLand: React.FC = () => {
   const [rice_land_lat, setRiceLandLat] = React.useState<string>("");
   const [rice_land_long, setRiceLandLong] = React.useState<string>("");
   const [rice_land_size, setRiceLandSize] = React.useState<string>("");
-  const [rice_land_condition, setRiceLandCondition] = React.useState<string>("");
-  const [rice_land_current_stage, setRiceLandStage] = React.useState<string>("not_yet_started");
+  const [rice_land_condition, setRiceLandCondition] =
+    React.useState<string>("");
+  const [rice_land_current_stage, setRiceLandStage] =
+    React.useState<string>("not_yet_started");
   const [loading, setLoading] = React.useState<boolean>(false);
 
   const riceLandConditions = [
     { label: "-- Select Condition --", value: "" },
-    { label: "Irrigated Lowland Rice", value: "irrigated_lowland_rice" },
-    { label: "Rainfed Lowland Rice", value: "rainfed_lowland_rice" },
-    { label: "Upland Rice", value: "upland_rice" },
+    { label: "Irrigated Lowland Rice", value: "Irrigated Lowland Rice" },
+    { label: "Rainfed Lowland Rice", value: "Rainfed Lowland Rice" },
+    { label: "Upland Rice", value: "Upland Rice" },
   ];
 
   const riceLandStages = [
-    { label: "Not Yet Started", value: "not_yet_started" },
-    { label: "Germination", value: "germination" },
-    { label: "Seeding Establishment", value: "seeding_establishment" },
-    { label: "Tillering", value: "tillering" },
-    { label: "Panicle Initiation", value: "panicle_initiation" },
-    { label: "Booting", value: "booting" },
-    { label: "Heading", value: "heading" },
-    { label: "Flowering", value: "flowering" },
-    { label: "Grain Filling", value: "grain_filling" },
-    { label: "Maturity", value: "maturity" },
+    { label: "Not Yet Started", value: "Not Yet Started" },
+    { label: "Germination", value: "Germination" },
+    { label: "Seeding Establishment", value: "Seeding Establishment" },
+    { label: "Tillering", value: "Tillering" },
+    { label: "Panicle Initiation", value: "Panicle Initiation" },
+    { label: "Booting", value: "Booting" },
+    { label: "Heading", value: "Heading" },
+    { label: "Flowering", value: "Flowering" },
+    { label: "Grain Filling", value: "Grain Filling" },
+    { label: "Maturity", value: "Maturity" },
   ];
 
   // Fetch rice land details for viewing
@@ -105,8 +107,12 @@ const ViewLand: React.FC = () => {
 
           <View>
             <Text style={GlobalStyles.label}>Location:</Text>
-            <Text style={[GlobalStyles.dataText, { marginBottom: 0 }]}>Latitude: {rice_land_lat}</Text>
-            <Text style={[GlobalStyles.dataText]}>Longitude: {rice_land_long}</Text>
+            <Text style={[GlobalStyles.dataText, { marginBottom: 0 }]}>
+              Latitude: {rice_land_lat}
+            </Text>
+            <Text style={[GlobalStyles.dataText]}>
+              Longitude: {rice_land_long}
+            </Text>
           </View>
 
           <View>
@@ -124,7 +130,9 @@ const ViewLand: React.FC = () => {
           </View>
 
           <View>
-            <Text style={GlobalStyles.label}>Current Stage of Rice Growth:</Text>
+            <Text style={GlobalStyles.label}>
+              Current Stage of Rice Growth:
+            </Text>
             <Text style={GlobalStyles.dataText}>
               {riceLandStages.find(
                 (stage) => stage.value === rice_land_current_stage
@@ -133,12 +141,7 @@ const ViewLand: React.FC = () => {
           </View>
 
           {/* Optional: You can add a "back" or "edit" button to go back to the list or edit the land */}
-          <Button
-            icon="arrow-left"
-            mode="outlined"
-            style={GlobalStyles.button}
-            onPress={() => router.back()} // Go back to previous screen
-          >
+          <Button icon="arrow-left" mode="outlined" style={GlobalStyles.button}>
             Back
           </Button>
         </View>

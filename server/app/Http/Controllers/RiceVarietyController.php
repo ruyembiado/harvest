@@ -49,6 +49,7 @@ class RiceVarietyController extends Controller
             ]);
 
             return response()->json([
+                'status' => 'success',
                 'message' => 'Rice variety added successfully',
                 'variety' => $variety,
             ], 200);

@@ -17,10 +17,11 @@ import {
   Card,
 } from "react-native-paper";
 import * as Location from "expo-location";
+import { useRiceLand } from "../../context/RiceLandContext";
 
 export default function Index() {
+  const { riceLandId, setRiceLandId } = useRiceLand();
   const [placeName, setPlaceName] = React.useState<string>("Fetching place...");
-  const [rice_land_id, setRiceLandId] = React.useState<string>("");
   const [rice_land_name, setRiceLandName] = React.useState<string>("");
   const [rice_land_lat, setRiceLandLat] = React.useState<string>("");
   const [rice_land_long, setRiceLandLong] = React.useState<string>("");
@@ -37,21 +38,21 @@ export default function Index() {
 
   const riceLandConditions = [
     { label: "-- Select Condition --", value: "" },
-    { label: "Irrigated Lowland Rice", value: "irrigated_lowland_rice" },
-    { label: "Rainfed Lowland Rice", value: "rainfed_lowland_rice" },
-    { label: "Upland Rice", value: "upland_rice" },
+    { label: "Irrigated Lowland Rice", value: "Irrigated Lowland Rice" },
+    { label: "Rainfed Lowland Rice", value: "Rainfed Lowland Rice" },
+    { label: "Upland Rice", value: "Upland Rice" },
   ];
   const riceLandStages = [
-    { label: "Not Yet Started", value: "not_yet_started" },
-    { label: "Germination", value: "germination" },
-    { label: "Seeding Establishment", value: "seeding_establishment" },
-    { label: "Tillering", value: "tillering" },
-    { label: "Panicle Initiation", value: "panicle_initiation" },
-    { label: "Booting", value: "booting" },
-    { label: "Heading", value: "heading" },
-    { label: "Flowering", value: "flowering" },
-    { label: "Grain Filling", value: "grain_filling" },
-    { label: "Maturity", value: "maturity" },
+    { label: "Not Yet Started", value: "Not Yet Started" },
+    { label: "Germination", value: "Germination" },
+    { label: "Seeding Establishment", value: "Seeding Establishment" },
+    { label: "Tillering", value: "Tillering" },
+    { label: "Panicle Initiation", value: "Panicle Initiation" },
+    { label: "Booting", value: "Booting" },
+    { label: "Heading", value: "Heading" },
+    { label: "Flowering", value: "Flowering" },
+    { label: "Grain Filling", value: "Grain Filling" },
+    { label: "Maturity", value: "Maturity" },
   ];
 
   const navigation = useNavigation();
@@ -277,7 +278,7 @@ export default function Index() {
                   style={[GlobalStyles.button, { width: "100%" }]}
                 >
                   <Link
-                    href={`/(rices)?rice_land_id=${rice_land_id}`}
+                    href={`/(rices)?rice_land_id=${riceLandId}`}
                     style={{}}
                   >
                     Rice Variety
@@ -289,7 +290,7 @@ export default function Index() {
                   style={[GlobalStyles.button, { width: "100%", backgroundColor: "#FBBC04" }]}
                 >
                   <Link
-                    href={`/(rices)?rice_land_id=${rice_land_id}`}
+                    href={`/(rices)?rice_land_id=${riceLandId}`}
                     style={{}}
                   >
                     Advisories

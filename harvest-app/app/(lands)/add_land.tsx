@@ -22,20 +22,20 @@ const AddLand: React.FC = () => {
   const [rice_land_long, setRiceLandLong] = React.useState<string>("");
   const [rice_land_size, setRiceLandSize] = React.useState<string>("");
   const [rice_land_condition, setRiceLandCondition] = React.useState<string>("");
-  const [rice_land_current_stage, setRiceLandStage] = React.useState<string>("not_yet_started");
+  const [rice_land_current_stage, setRiceLandStage] = React.useState<string>("Not Yet Started");
   const [loading, setLoading] = React.useState<boolean>(false);
   const [locationLoading, setLocationLoading] = React.useState<boolean>(false);
   const router = useRouter();
 
   const riceLandConditions = [
     { label: "-- Select Condition --", value: "" },
-    { label: "Irrigated Lowland Rice", value: "irrigated_lowland_rice" },
-    { label: "Rainfed Lowland Rice", value: "rainfed_lowland_rice" },
-    { label: "Upland Rice", value: "upland_rice" },
+    { label: "Irrigated Lowland Rice", value: "Irrigated Lowland Rice" },
+    { label: "Rainfed Lowland Rice", value: "Rainfed Lowland Rice" },
+    { label: "Upland Rice", value: "Upland Rice" },
   ];
 
   const riceLandStages = [
-    { label: "Not Yet Started", value: "not_yet_started" },
+    { label: "Not Yet Started", value: "Not Yet Started" },
   ];
 
   // Fetch current location

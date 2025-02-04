@@ -6,6 +6,7 @@ use App\Http\Controllers\AICoontroller;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RiceLandController;
 use App\Http\Controllers\RiceVarietyController;
+use App\Http\Controllers\RiceGrowthStageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,4 +41,7 @@ Route::get('/get_rice_variety/{id}', [RiceVarietyController::class, 'get_variety
 Route::delete('/delete_rice_variety', [RiceVarietyController::class, 'delete_rice_land_by_id']);
 
 // AI
-Route::post('/generate-stage-growth-schedule', [AICoontroller::class, 'generate_stage_growth_schedule']);
+Route::get('/generate_stage_growth_schedule', [AICoontroller::class, 'generate_stage_growth_schedule']);
+
+// Rice Growth Stages
+Route::get('/get_rice_growth_stages/{rice_land_id}', [RiceGrowthStageController::class, 'get_rice_land_stages_by_land_id']);

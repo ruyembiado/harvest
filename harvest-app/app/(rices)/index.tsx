@@ -14,18 +14,10 @@ import { Link, useRouter, useLocalSearchParams } from "expo-router";
 import getUserIdOrLogout from "@/hooks/getUserIdOrLogout";
 
 const Index: React.FC = () => {
-  const [riceVariety, setRiceVariety] = useState<any>(null); // Now it's a single object
-  const [loading, setLoading] = useState<boolean>(true);
+  const [riceVariety, setRiceVariety] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState<boolean>(true);
   const router = useRouter();
   const { rice_land_id } = useLocalSearchParams();
-
-  const riceVarities = [
-    { label: "-- Select Variety --", value: "" },
-    { label: "NSIC Rc 222", value: "nsic_rc_222" },
-    { label: "NSIC Rc 216", value: "nsic_rc_216" },
-    { label: "NSIC Rc 480", value: "nsic_rc_480" },
-    { label: "NSIC Rc 10", value: "nsic_rc_10" },
-  ];
 
   const fetchRiceVariety = async () => {
     try {
@@ -80,7 +72,7 @@ const Index: React.FC = () => {
         <Card.Content>
           <View style={[GlobalStyles.RiceLandContainer]}>
             <View>
-              {!riceVariety && ( 
+              {!riceVariety && (
                 <Button
                   mode="contained"
                   style={[GlobalStyles.addButton, { marginBottom: 20 }]}
@@ -102,10 +94,7 @@ const Index: React.FC = () => {
                     >
                       <View style={GlobalStyles.overlay}></View>
                       <Text style={GlobalStyles.RiceLandTitle}>
-                        {riceVarities.find(
-                          (stage) =>
-                            stage.value === riceVariety.rice_variety_name
-                        )?.label || "Not available"}
+                        {riceVariety.rice_variety_name}
                       </Text>
                     </ImageBackground>
                   </View>
@@ -118,6 +107,13 @@ const Index: React.FC = () => {
                 )}
               </ScrollView>
             </View>
+            <Button
+              icon="arrow-left"
+              mode="contained"
+              style={GlobalStyles.button}
+            >
+              <Link href={`/(tabs)/?id=${rice_land_id}`}>Back</Link>
+            </Button>
           </View>
         </Card.Content>
       </Card>

@@ -3,17 +3,14 @@ import { View, ScrollView, Alert } from "react-native";
 import {
   Provider as PaperProvider,
   Text,
-  TextInput,
   Button,
   ActivityIndicator,
 } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { Link, useRouter, useLocalSearchParams } from "expo-router";
-import * as Location from "expo-location";
 import GlobalStyles from "../../assets/styles/styles";
 import customTheme from "../../assets/styles/theme";
 import api from "../../services/api";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import getUserIdOrLogout from "@/hooks/getUserIdOrLogout";
 
 const AddRice: React.FC = () => {
@@ -24,19 +21,19 @@ const AddRice: React.FC = () => {
 
   const riceVarities = [
     { label: "-- Select Variety --", value: "" },
-    { label: "NSIC Rc 222", value: "nsic_rc_222" },
-    { label: "NSIC Rc 216", value: "nsic_rc_216" },
-    { label: "NSIC Rc 480", value: "nsic_rc_480" },
-    { label: "NSIC Rc 10", value: "nsic_rc_10" },
+    { label: "NSIC Rc 222", value: "NSIC Rc 222" },
+    { label: "NSIC Rc 216", value: "NSIC Rc 216" },
+    { label: "NSIC Rc 480", value: "NSIC Rc 480" },
+    { label: "NSIC Rc 10", value: "NSIC Rc 10" },
   ];
 
   const handleAddRiceVariety = async () => {
     if (!rice_variety_name) {
-      alert("Rice land name is required.");
+      alert("Rice variety name is required.");
       return;
     }
 
-    setLoading(true);
+    setLoading(true); // Set loading to true before starting the API calls
 
     try {
       const user_id = await getUserIdOrLogout(router);
@@ -48,17 +45,43 @@ const AddRice: React.FC = () => {
         return;
       }
 
+      // Step 1: Add the rice variety
       const response = await api.post("/add_rice_variety", {
         rice_land_id,
         rice_variety_name,
       });
 
-      router.replace("/(rices)");
-      Alert.alert("Rice variety added Successfully.");
+      if (response.data.status === "success") {
+        alert("Rice variety added successfully.");
+
+        // Step 2: Automatically generate the growth stage schedule
+        const scheduleResponse = await api.get(
+          "/generate_stage_growth_schedule",
+          {
+            params: {
+              rice_variety_name: rice_variety_name,
+              rice_land_id: rice_land_id,
+            },
+          }
+        );
+
+        if (scheduleResponse.data.status === "success") {
+          alert("Growth stage schedule generated successfully!");
+          console.log("Generated Schedule:", scheduleResponse.data.data);
+        } else {
+          alert(
+            "Failed to generate schedule: " + scheduleResponse.data.message
+          );
+        }
+        router.replace(`/(rices)?rice_land_id=${rice_land_id}`);
+      } else {
+        alert("Adding variety failed. Please try again.");
+      }
     } catch (error) {
       console.error("Add error:", error);
-      Alert.alert("Add failed.Please try again.");
+      alert("Add failed. Please try again.");
     } finally {
+      // Ensure loading is set to false after both API calls have finished
       setLoading(false);
     }
   };

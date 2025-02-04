@@ -832,6 +832,13 @@
 
 <body class="antialiased">
     <!-- Display Results -->
+    TEST
+
+    <?php
+    echo '<pre>';
+    print_r($generatedText);
+    echo '</pre>';
+    ?>
     @if (isset($generatedText))
         <div class="results">
             <h3>Generated Growth Stages</h3>

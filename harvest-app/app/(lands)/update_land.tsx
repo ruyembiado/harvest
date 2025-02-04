@@ -30,22 +30,22 @@ const UpdateLand: React.FC = () => {
 
   const riceLandConditions = [
     { label: "-- Select Condition --", value: "" },
-    { label: "Irrigated Lowland Rice", value: "irrigated_lowland_rice" },
-    { label: "Rainfed Lowland Rice", value: "rainfed_lowland_rice" },
-    { label: "Upland Rice", value: "upland_rice" },
+    { label: "Irrigated Lowland Rice", value: "Irrigated Lowland Rice" },
+    { label: "Rainfed Lowland Rice", value: "Rainfed Lowland Rice" },
+    { label: "Upland Rice", value: "Upland Rice" },
   ];
 
   const riceLandStages = [
-    { label: "Not Yet Started", value: "not_yet_started" },
-    { label: "Germination", value: "germination" },
-    { label: "Seeding Establishment", value: "seeding_establishment" },
-    { label: "Tillering", value: "tillering" },
-    { label: "Panicle Initiation", value: "panicle_initiation" },
-    { label: "Booting", value: "booting" },
-    { label: "Heading", value: "heading" },
-    { label: "Flowering", value: "flowering" },
-    { label: "Grain Filling", value: "grain_filling" },
-    { label: "Maturity", value: "maturity" },
+    { label: "Not Yet Started", value: "Not Yet Started" },
+    { label: "Germination", value: "Germination" },
+    { label: "Seeding Establishment", value: "Seeding Establishment" },
+    { label: "Tillering", value: "Tillering" },
+    { label: "Panicle Initiation", value: "Panicle Initiation" },
+    { label: "Booting", value: "Booting" },
+    { label: "Heading", value: "Heading" },
+    { label: "Flowering", value: "Flowering" },
+    { label: "Grain Filling", value: "Grain Filling" },
+    { label: "Maturity", value: "Maturity" },
   ];
 
   // Fetch current location

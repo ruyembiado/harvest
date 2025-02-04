@@ -17,5 +17,3 @@ use App\Http\Controllers\AICoontroller;
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('/generate-stage-growth-schedule', [AICoontroller::class, 'generate_stage_growth_schedule']);
