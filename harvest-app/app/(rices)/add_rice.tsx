@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { View, ScrollView, Alert } from "react-native";
+import React, { useState } from "react";
+import { View, ScrollView, Platform, TouchableOpacity } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import {
   Provider as PaperProvider,
   Text,
@@ -7,7 +8,7 @@ import {
   ActivityIndicator,
 } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
-import { Link, useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import GlobalStyles from "../../assets/styles/styles";
 import customTheme from "../../assets/styles/theme";
 import api from "../../services/api";
@@ -15,9 +16,18 @@ import getUserIdOrLogout from "@/hooks/getUserIdOrLogout";
 
 const AddRice: React.FC = () => {
   const [rice_variety_name, setRiceVariety] = React.useState<string>("");
+  const [planting_date, setPlantingDate] = React.useState(new Date());
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const router = useRouter();
   const { rice_land_id } = useLocalSearchParams();
+
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(false); // Hide the date picker
+    if (selectedDate) {
+      setPlantingDate(selectedDate);
+    }
+  };
 
   const riceVarities = [
     { label: "-- Select Variety --", value: "" },
@@ -32,20 +42,23 @@ const AddRice: React.FC = () => {
       alert("Rice variety name is required.");
       return;
     }
+    if (!planting_date) {
+      alert("Please select a planting date.");
+      return;
+    }
 
-    setLoading(true); // Set loading to true before starting the API calls
+    // Format the date to "YYYY-MM-DD"
+    const formattedDate = planting_date.toISOString().split("T")[0];
+    console.log(formattedDate);
+
+    setLoading(true);
 
     try {
       const user_id = await getUserIdOrLogout(router);
-      if (!user_id) {
-        return;
-      }
+      if (!user_id) return;
+      if (!rice_land_id) return;
 
-      if (!rice_land_id) {
-        return;
-      }
-
-      // Step 1: Add the rice variety
+      // Step 1: Add the rice variety with planting date
       const response = await api.post("/add_rice_variety", {
         rice_land_id,
         rice_variety_name,
@@ -54,13 +67,14 @@ const AddRice: React.FC = () => {
       if (response.data.status === "success") {
         alert("Rice variety added successfully.");
 
-        // Step 2: Automatically generate the growth stage schedule
+        // Step 2: Generate growth stage schedule
         const scheduleResponse = await api.get(
           "/generate_stage_growth_schedule",
           {
             params: {
-              rice_variety_name: rice_variety_name,
-              rice_land_id: rice_land_id,
+              rice_variety_name,
+              rice_land_id,
+              planting_date: formattedDate,
             },
           }
         );
@@ -73,6 +87,7 @@ const AddRice: React.FC = () => {
             "Failed to generate schedule: " + scheduleResponse.data.message
           );
         }
+
         router.replace(`/(rices)?rice_land_id=${rice_land_id}`);
       } else {
         alert("Adding variety failed. Please try again.");
@@ -81,7 +96,6 @@ const AddRice: React.FC = () => {
       console.error("Add error:", error);
       alert("Add failed. Please try again.");
     } finally {
-      // Ensure loading is set to false after both API calls have finished
       setLoading(false);
     }
   };
@@ -107,14 +121,36 @@ const AddRice: React.FC = () => {
               onValueChange={(itemValue) => setRiceVariety(itemValue)}
               style={{ height: 50, width: 250 }}
             >
-              {riceVarities.map((condition) => (
+              {riceVarities.map((variety) => (
                 <Picker.Item
-                  label={condition.label}
-                  value={condition.value}
-                  key={condition.value}
+                  label={variety.label}
+                  value={variety.value}
+                  key={variety.value}
                 />
               ))}
             </Picker>
+          </View>
+
+          <View style={{ marginVertical: 10 }}>
+            <Text>Select Planting Date:</Text>
+            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+              <Text
+                style={[
+                  GlobalStyles.dataText,
+                  { padding: 10, borderWidth: 1, borderRadius: 5, margin: 10 },
+                ]}
+              >
+                {planting_date.toDateString()}
+              </Text>
+            </TouchableOpacity>
+            {showDatePicker && (
+              <DateTimePicker
+                value={planting_date}
+                mode="date"
+                display="default"
+                onChange={handleDateChange}
+              />
+            )}
           </View>
 
           <Button

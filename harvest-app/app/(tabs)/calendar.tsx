@@ -1,41 +1,34 @@
-import { View, Alert, StyleSheet, ScrollView } from "react-native";
-import { useRouter, useLocalSearchParams, Link } from "expo-router";
+import { View, ScrollView } from "react-native";
 import React, { useState, useEffect } from "react";
 import api from "@/services/api";
+import { useRiceLand } from "../../context/RiceLandContext";
+import { Calendar } from "react-native-calendars";
+import { Text, ActivityIndicator, PaperProvider } from "react-native-paper";
 import GlobalStyles from "@/assets/styles/styles";
 import customTheme from "@/assets/styles/theme";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import {
-  Text,
-  Button,
-  Menu,
-  Divider,
-  IconButton,
-  ActivityIndicator,
-  PaperProvider,
-  Card,
-} from "react-native-paper";
-import * as Location from "expo-location";
-import { Calendar } from "react-native-calendars";
-import { useRiceLand } from "../../context/RiceLandContext";
 
 const CalendarScreen: React.FC = () => {
   const [growthStages, setGrowthStages] = useState<Array<any>>([]);
+  const [markedDates, setMarkedDates] = useState<{ [key: string]: any }>({});
   const [loading, setLoading] = useState<boolean>(true);
-  const router = useRouter();
   const { riceLandId } = useRiceLand();
 
-  console.log(riceLandId);
+  useEffect(() => {
+    if (riceLandId) {
+      fetchGrowthStages();
+    }
+  }, [riceLandId]);
 
   const fetchGrowthStages = async () => {
-    if (!riceLandId) return;
     try {
       setLoading(true);
       const response = await api.get(`/get_rice_growth_stages/${riceLandId}`);
 
       if (response.data.status === "success") {
-        setGrowthStages(response.data.data);
+        const stages = response.data.data;
+        setGrowthStages(stages);
+        mapStagesToCalendar(stages);
+        console.log(stages);
       } else {
         console.error("Error fetching growth stages:", response.data.message);
       }
@@ -46,14 +39,59 @@ const CalendarScreen: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    fetchGrowthStages();
-  }, [riceLandId]);
+  const mapStagesToCalendar = (stages: any[]) => {
+    const marked: { [key: string]: any } = {};
+
+    stages.forEach((stage) => {
+      const startDate = new Date(stage.rice_growth_stage_start);
+      const endDate = new Date(stage.rice_growth_stage_end);
+      const stageColor = getStageColor(stage.rice_growth_stage);
+
+      while (startDate <= endDate) {
+        const formattedDate = startDate.toISOString().split("T")[0];
+
+        marked[formattedDate] = {
+          selected: true,
+          marked: true,
+          selectedColor: stageColor,
+        };
+
+        startDate.setDate(startDate.getDate() + 1);
+      }
+    });
+
+    setMarkedDates(marked);
+  };
+
+  const getStageColor = (stage: string) => {
+    switch (stage) {
+      case "Germination":
+        return "#4CAF50"; // Green
+      case "Seeding Establishment":
+        return "#FFC107"; // Yellow
+      case "Tillering":
+        return "#03A9F4"; // Blue
+      case "Panicle Initiation":
+        return "#9C27B0"; // Purple
+      case "Booting":
+        return "#FF9800"; // Orange
+      case "Heading":
+        return "#F44336"; // Red
+      case "Flowering":
+        return "#E91E63"; // Pink
+      case "Grain Filling":
+        return "#795548"; // Brown
+      case "Maturity":
+        return "#607D8B"; // Gray
+      default:
+        return "#000000"; // Default black
+    }
+  };
 
   if (loading) {
     return (
       <View style={GlobalStyles.loadingContainer}>
-        <ActivityIndicator animating={true} size="large" />
+        <ActivityIndicator animating={true} size="large" color="#4CAF50" />
       </View>
     );
   }
@@ -63,42 +101,31 @@ const CalendarScreen: React.FC = () => {
       <View
         style={[
           GlobalStyles.container,
-          {
-            alignItems: "center",
-            justifyContent: "flex-start",
-            paddingBottom: 10,
-            width: "100%",
-          },
+          { alignItems: "center", width: "100%", paddingTop: 20 },
         ]}
       >
-        <Text style={[GlobalStyles.label, { paddingBottom: 10 }]}>
-          RICE GROWTH STAGES
-        </Text>
-        <ScrollView
-          contentContainerStyle={[GlobalStyles.RiceLandScrollContainer]}
-          showsVerticalScrollIndicator={false}
-        >
-          {growthStages.length > 0 ? (
-            growthStages.map((stage, index) => (
-              <View key={index} style={{ width: "300" }}>
-                <View style={[GlobalStyles.mainDetailContainer]}>
-                  <Text style={GlobalStyles.label}>
-                    {stage.rice_growth_stage}
-                  </Text>
-                  <Text style={[GlobalStyles.dataText]}>
-                    Start: {stage.rice_growth_stage_start}
-                  </Text>
-                  <Text style={[GlobalStyles.dataText]}>
-                    Start: {stage.rice_growth_stage_end}
-                  </Text>
-                </View>
-              </View>
-            ))
-          ) : (
-            <Text style={GlobalStyles.noDataText}>
-              No growth stages available.
-            </Text>
-          )}
+        <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+          <Calendar
+            style={{
+              borderWidth: 1,
+              borderRadius: 5,
+              borderColor: "#E0E0E0",
+              width: 320,
+            }}
+            theme={{
+              arrowColor: "#4CAF50",
+              backgroundColor: "#ffffff",
+              calendarBackground: "#ffffff",
+              textSectionTitleColor: "#000",
+              selectedDayBackgroundColor: "#00adf5",
+              selectedDayTextColor: "#ffffff",
+              todayTextColor: "#4CAF50",
+              dayTextColor: "#000",
+              textDisabledColor: "#CBCBCB",
+            }}
+            markedDates={markedDates}
+            markingType={"multi-dot"} 
+          />
         </ScrollView>
       </View>
     </PaperProvider>

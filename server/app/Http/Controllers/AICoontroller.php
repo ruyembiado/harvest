@@ -16,10 +16,9 @@ class AICoontroller extends Controller
     {
         $crop_type = $request->rice_variety_name;
         $rice_land_id = $request->rice_land_id;
-        $today = Carbon::today()->toDateString();
+        $planting_date = $request->planting_date;
 
-        // Updated prompt
-        $prompt = "You are an Agriculture Expert. $today, I planted my $crop_type crop. The following are the stages of rice growth of $crop_type: 
+        $prompt = "You are an Agriculture Expert. Today is $planting_date, and I just planted my $crop_type crop. The following are the stages of rice growth of $crop_type: 
     Germination, Seeding Establishment, Tillering, Panicle Initiation, Booting, Heading, Flowering, Grain Filling, and Maturity. 
     Please create a schedule for each stage with a start date and an end date.
     Format your response as a JSON array where each object contains:
