@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdvisoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AICoontroller;
@@ -41,7 +42,11 @@ Route::get('/get_rice_variety/{id}', [RiceVarietyController::class, 'get_variety
 Route::delete('/delete_rice_variety', [RiceVarietyController::class, 'delete_rice_land_by_id']);
 
 // AI
-Route::get('/generate_stage_growth_schedule', [AICoontroller::class, 'generate_stage_growth_schedule']);
+Route::post('/generate_stage_growth_schedule', [AICoontroller::class, 'generate_stage_growth_schedule']);
+Route::post('/generate_advisories', [AICoontroller::class, 'generate_advisories']);
 
 // Rice Growth Stages
 Route::get('/get_rice_growth_stages/{rice_land_id}', [RiceGrowthStageController::class, 'get_rice_land_stages_by_land_id']);
+
+// Advisories
+Route::get('/get_advisories_today/{rice_land_id}', [AdvisoryController::class, 'get_advisories_today']);

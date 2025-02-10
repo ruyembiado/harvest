@@ -68,14 +68,12 @@ const AddRice: React.FC = () => {
         alert("Rice variety added successfully.");
 
         // Step 2: Generate growth stage schedule
-        const scheduleResponse = await api.get(
+        const scheduleResponse = await api.post(
           "/generate_stage_growth_schedule",
           {
-            params: {
-              rice_variety_name,
-              rice_land_id,
-              planting_date: formattedDate,
-            },
+            rice_variety_name,
+            rice_land_id,
+            planting_date: formattedDate,
           }
         );
 

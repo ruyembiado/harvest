@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rice_growth_stages', function (Blueprint $table) {
+        Schema::create('advisories', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('rice_land_id');
             $table->foreign('rice_land_id')->references('id')->on('rice_lands')->onDelete('cascade');
-            $table->string('rice_growth_stage');
-            $table->date('rice_growth_stage_start');
-            $table->date('rice_growth_stage_end');
+            $table->json('advisories');
+            $table->date('date');
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rice_growth_stages');
+        Schema::dropIfExists('advisories');
     }
 };

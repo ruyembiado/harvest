@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\RiceVariety;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class RiceLand extends Model
 {
@@ -20,4 +21,9 @@ class RiceLand extends Model
         'rice_land_condition',
         'rice_land_current_stage'
     ];
+
+    public function riceVariety()
+    {
+        return $this->hasOne(RiceVariety::class, 'rice_land_id');
+    }
 }

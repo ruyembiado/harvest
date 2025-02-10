@@ -11,14 +11,15 @@ class RiceLandController extends Controller
 
     public function get_rice_land($id)
     {
-        $land = RiceLand::find($id);
+        $land = RiceLand::with('riceVariety')->find($id);
+
         if (!$land) {
             return response()->json(['error' => 'Rice land not found'], 404);
         }
 
         return response()->json($land);
     }
-
+    
     public function update_rice_land(Request $request)
     {
         try {

@@ -130,7 +130,7 @@ const Index: React.FC = () => {
                 <Link href="/(lands)/add_land">Add</Link>
               </Button>
               <ScrollView
-                contentContainerStyle={GlobalStyles.RiceLandScrollContainer}
+                contentContainerStyle={[GlobalStyles.RiceLandScrollContainer, { paddingBottom: 10 }]}
                 showsVerticalScrollIndicator={false}
               >
                 {riceLands.length > 0 ? (

@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Log;
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Http;
-use App\Models\RiceGrowthStages;
 use Carbon\Carbon;
+use App\Models\Advisory;
+use Illuminate\Http\Request;
+use App\Models\RiceGrowthStages;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Http;
 
 class AICoontroller extends Controller
 {
@@ -49,7 +51,7 @@ class AICoontroller extends Controller
                 $data = $response->json();
 
                 // Log entire OpenAI response
-                \Log::info('OpenAI Response:', $data);
+                Log::info('OpenAI Response:', $data);
 
                 // Ensure response contains valid choices
                 if (!isset($data['choices'][0]['message']['content'])) {
@@ -62,7 +64,7 @@ class AICoontroller extends Controller
                 $generatedText = $data['choices'][0]['message']['content'];
 
                 // Log raw AI response before JSON parsing
-                \Log::info('AI Raw Response (Before JSON Decode):', ['response' => $generatedText]);
+                // \Log::info('AI Raw Response (Before JSON Decode):', ['response' => $generatedText]);
 
                 // **Fix: Remove Markdown formatting** (Improved regex)
                 $generatedText = preg_replace('/^```json\s*|\s*```$/', '', trim($generatedText));
@@ -80,7 +82,7 @@ class AICoontroller extends Controller
 
                 // **Validate JSON decoding**
                 if (json_last_error() !== JSON_ERROR_NONE) {
-                    \Log::error('JSON Decode Error:', ['error' => json_last_error_msg()]);
+                    // \Log::error('JSON Decode Error:', ['error' => json_last_error_msg()]);
                     return response()->json([
                         'status' => 'error',
                         'message' => 'JSON decoding failed: ' . json_last_error_msg(),
@@ -90,7 +92,7 @@ class AICoontroller extends Controller
                 $this->store_generated_growth_stages($rice_land_id, $stages);
 
                 // Log parsed JSON
-                \Log::info('Parsed AI Response:', $stages);
+                // \Log::info('Parsed AI Response:', $stages);
 
                 // Pass data to Blade view
                 return response()->json([
@@ -99,7 +101,7 @@ class AICoontroller extends Controller
                 ], 200);
             } else {
                 // Log API errors
-                \Log::error('OpenAI API Error:', $response->json());
+                // \Log::error('OpenAI API Error:', $response->json());
 
                 return response()->json([
                     'status' => 'error',
@@ -108,7 +110,7 @@ class AICoontroller extends Controller
             }
         } catch (\Exception $e) {
             // Log exceptions
-            \Log::error('Exception:', ['message' => $e->getMessage()]);
+            // \Log::error('Exception:', ['message' => $e->getMessage()]);
 
             return response()->json([
                 'status' => 'error',
@@ -127,5 +129,114 @@ class AICoontroller extends Controller
                 'rice_growth_stage_end' => $stage['rice_growth_stage_end'],
             ]);
         }
+    }
+
+    public function generate_advisories(Request $request)
+    {
+        $date = $request->today;
+        $rice_land_id = $request->rice_land_id;
+        $rice_land_size = $request->rice_land_size;
+        $rice_land_condition = $request->rice_land_condition;
+        $rice_land_current_stage = $request->rice_land_current_stage;
+        $rice_variety = $request->rice_variety;
+        $weatherData = json_encode($request->weatherData); // Ensure valid JSON
+
+        // AI Prompt (Modified to return an array)
+        $prompt = "You are an Agriculture Expert. Give advisories as an array based on the following rice land data: 
+        Land size: {$rice_land_size} hectares,
+        Land condition: {$rice_land_condition},
+        Rice growth stage: {$rice_land_current_stage},
+        Rice variety: {$rice_variety},
+        Weather temperature: {$weatherData} degree celsius.
+
+        ONLY return the JSON, no extra text, no explanations.";
+
+        try {
+            // Call OpenAI API
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+                'Content-Type' => 'application/json',
+            ])->timeout(30)->post('https://api.openai.com/v1/chat/completions', [
+                'model' => 'gpt-3.5-turbo',
+                'messages' => [
+                    ['role' => 'system', 'content' => 'You are a helpful assistant.'],
+                    ['role' => 'user', 'content' => $prompt],
+                ],
+                'max_tokens' => 500,
+                'temperature' => 0.7,
+            ]);
+
+            // Check if OpenAI API request was successful
+            if (!$response->successful()) {
+                Log::error('OpenAI API Error:', $response->json());
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Failed to generate advisory from OpenAI API.',
+                ], 500);
+            }
+
+            // Extract AI response
+            $data = $response->json();
+            if (!isset($data['choices'][0]['message']['content'])) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No valid response from AI.',
+                ], 500);
+            }
+
+            $generatedText = $data['choices'][0]['message']['content'];
+
+            // Log AI response for debugging
+            Log::info('Raw AI Response:', ['response' => $generatedText]);
+
+            // **Fix: Remove Markdown formatting (if any)**
+            $generatedText = preg_replace('/^```json\s*|\s*```$/', '', trim($generatedText));
+
+            // Validate non-empty response
+            if (empty($generatedText)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'AI response is empty.',
+                ], 500);
+            }
+
+            // Decode JSON response
+            $advisories = json_decode($generatedText, true);
+
+            // Check for JSON errors
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                Log::error('JSON Decode Error:', ['error' => json_last_error_msg()]);
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Invalid JSON response from AI: ' . json_last_error_msg(),
+                ], 500);
+            }
+
+            // Store advisories in the database
+            $this->store_generated_advisories($rice_land_id, $advisories, $date);
+
+            // Log success
+            Log::info('Generated Advisories:', $advisories);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Advisories generated successfully.',
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Exception in generate_advisories:', ['message' => $e->getMessage()]);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An error occurred: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function store_generated_advisories($rice_land_id, $advisories, $date)
+    {
+        Advisory::create([
+            'rice_land_id' => $rice_land_id,
+            'advisories' => json_encode($advisories),
+            'date' => $date,
+        ]);
     }
 }

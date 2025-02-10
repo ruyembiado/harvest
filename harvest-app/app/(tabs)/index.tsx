@@ -36,6 +36,8 @@ export default function Index() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
 
+  console.log(riceLandId);
+
   const riceLandConditions = [
     { label: "-- Select Condition --", value: "" },
     { label: "Irrigated Lowland Rice", value: "Irrigated Lowland Rice" },
@@ -289,10 +291,7 @@ export default function Index() {
                   mode="contained"
                   style={[GlobalStyles.button, { width: "100%", backgroundColor: "#FBBC04" }]}
                 >
-                  <Link
-                    href={`/(rices)?rice_land_id=${riceLandId}`}
-                    style={{}}
-                  >
+                  <Link href={`/(advisories)?land_id=${riceLandId}`}>
                     Advisories
                   </Link>
                 </Button>
