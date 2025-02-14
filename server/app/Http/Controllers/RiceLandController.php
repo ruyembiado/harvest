@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Exception;
 use App\Models\RiceLand;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RiceLandController extends Controller
 {
@@ -19,7 +20,7 @@ class RiceLandController extends Controller
 
         return response()->json($land);
     }
-    
+
     public function update_rice_land(Request $request)
     {
         try {
@@ -132,5 +133,56 @@ class RiceLandController extends Controller
                 'error' => $ex->getMessage(),
             ], 500);
         }
+    }
+
+
+    public function update_rice_land_stage(Request $request)
+    {
+        $request->validate([
+            'today' => 'required|date',
+            'id' => 'required|integer|exists:rice_lands,id',
+        ]);
+
+        $riceLand = DB::table('rice_lands')->where('id', $request->id)->first();
+
+        if (!$riceLand) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Rice land not found.',
+            ], 404);
+        }
+
+        $stage = DB::table('rice_growth_stages')
+            ->where('rice_land_id', $riceLand->id)
+            ->where('rice_growth_stage_start', '<=', $request->today)
+            ->where('rice_growth_stage_end', '>=', $request->today)
+            ->first();
+
+        if (!$stage) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No matching growth stage found for today.',
+                'debug_stage' => json_encode($stage) // ✅ Debugging
+            ], 404);
+        }
+
+        $updated = DB::table('rice_lands')
+            ->where('id', $request->id)
+            ->update(['rice_land_current_stage' => $stage->rice_growth_stage]);
+
+        if ($updated === 0) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Rice land stage is already up-to-date.',
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Rice land stage updated successfully.',
+            'new_stage' => $stage->rice_growth_stage,
+            'stage_start' => $stage->rice_growth_stage_start,
+            'stage_end' => $stage->rice_growth_stage_end
+        ]);
     }
 }

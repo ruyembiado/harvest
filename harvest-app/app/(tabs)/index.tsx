@@ -57,6 +57,31 @@ export default function Index() {
     { label: "Maturity", value: "Maturity" },
   ];
 
+  const today = new Date().toISOString().split("T")[0];
+  const update_rice_land_stage_today = async () => {
+    try {
+      const response = await api.post("/update_rice_land_stage_today/", {
+        today,
+        id,
+      });
+
+      if (response.data.status === "success") {
+        console.log("Rice land stage updated successfully:", response.data);
+      } else {
+        console.log(
+          "Failed to update rice land stage:",
+          response.data.message
+        );
+      }
+    } catch (error) {
+      console.error("Error updating rice growth stage:", error);
+      Alert.alert(
+        "Error",
+        "An error occurred while updating the rice land stage."
+      );
+    }
+  };
+
   const navigation = useNavigation();
   useEffect(() => {
     if (rice_land_name) {
@@ -115,6 +140,7 @@ export default function Index() {
       setRiceLandSize(data.rice_land_size);
       setRiceLandCondition(data.rice_land_condition);
       setRiceLandStage(data.rice_land_current_stage);
+      update_rice_land_stage_today();
       setLoading(false);
     } catch (error) {
       console.error("Error fetching land details:", error);
@@ -279,17 +305,17 @@ export default function Index() {
                   mode="contained"
                   style={[GlobalStyles.button, { width: "100%" }]}
                 >
-                  <Link
-                    href={`/(rices)?rice_land_id=${riceLandId}`}
-                    style={{}}
-                  >
+                  <Link href={`/(rices)?rice_land_id=${riceLandId}`} style={{}}>
                     Rice Variety
                   </Link>
                 </Button>
                 <Button
                   icon={getWeatherIcon(weatherData.weathercode)}
                   mode="contained"
-                  style={[GlobalStyles.button, { width: "100%", backgroundColor: "#FBBC04" }]}
+                  style={[
+                    GlobalStyles.button,
+                    { width: "100%", backgroundColor: "#FBBC04" },
+                  ]}
                 >
                   <Link href={`/(advisories)?land_id=${riceLandId}`}>
                     Advisories

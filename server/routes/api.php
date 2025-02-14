@@ -35,6 +35,7 @@ Route::post('/rice_lands', [RiceLandController::class, 'get_rice_lands_by_user_i
 Route::get('/get_rice_land/{id}', [RiceLandController::class, 'get_rice_land']);
 Route::post('/update_rice_land', [RiceLandController::class, 'update_rice_land']);
 Route::delete('/delete_rice_land', [RiceLandController::class, 'delete_rice_land_by_id']);
+Route::post('/update_rice_land_stage_today', [RiceLandController::class, 'update_rice_land_stage']);
 
 // Rice Varieties
 Route::post('/add_rice_variety', [RiceVarietyController::class, 'add_rice_variety']);
