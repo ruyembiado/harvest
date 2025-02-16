@@ -1,11 +1,10 @@
 import { View, Alert } from "react-native";
-import { useLocalSearchParams, Link } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import React, { useState, useEffect } from "react";
 import api from "@/services/api";
 import GlobalStyles from "@/assets/styles/styles";
 import customTheme from "@/assets/styles/theme";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { useNavigation } from "@react-navigation/native";
 import {
   Text,
   ActivityIndicator,
@@ -24,39 +23,42 @@ export default function Index() {
   const [rice_land_current_stage, setRiceLandStage] = useState<string>("");
   const [weatherLoading, setWeatherLoading] = useState<boolean>(false);
   const [weatherData, setWeatherData] = useState<any>(null);
+  const [currentDayIndex, setCurrentDayIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const { land_id } = useLocalSearchParams();
 
   const stageIcons: { [key: string]: string } = {
-    Germination: "sprout",
-    "Seeding Establishment": "seedling",
-    Tillering: "grass",
+    "Germination": "sprout",
+    "Seeding Establishment": "sprout-outline",
+    "Tillering": "grass",
     "Panicle Initiation": "leaf",
-    Booting: "leaf-maple",
-    Heading: "corn",
-    Flowering: "flower",
+    "Booting": "leaf-maple",
+    "Heading": "corn",
+    "Flowering": "flower",
     "Grain Filling": "wheat",
-    Maturity: "rice",
+    "Maturity": "rice",
   };
 
   const today = new Date().toISOString().split("T")[0];
-  console.log(today);
+
   // Fetch advisories
   const fetchAdvisories = async (
     landId: string,
+    date: string,
     isGenerating: boolean = false
   ) => {
     if (!landId) return;
     try {
-      const response = await api.get(`/get_advisories_today/${landId}`);
-      const data = response.data;
+      const response = await api.get(`/get_advisories_today/${landId}/${date}`);
+      const today_advisories = response.data;
+      const recent_advisories = response.data.recent_advisories;
 
-      if (data.length > 0) {
-        // Parse advisories JSON string into an array
-        const advisoriesArray = JSON.parse(data[0].advisories);
+      console.log("fetchAdvisories response:", today_advisories);
+      // console.log("fetchRecentAdvisories response:", recent_advisories);
+
+      if (today_advisories.length > 0) {
+        const advisoriesArray = JSON.parse(today_advisories[0].advisories);
         setAdvisories(advisoriesArray);
-
-        console.log(advisoriesArray);
 
         if (!isGenerating) {
           Alert.alert(
@@ -66,11 +68,14 @@ export default function Index() {
         }
       } else {
         if (!isGenerating) {
-          Alert.alert(
-            "Advisory Alert",
-            "No advisories found. Generating advisory..."
-          );
-          generateAdvisory(landId);
+          // Alert.alert(
+          //   "Advisory Alert",
+          //   "No advisories found. Generating advisory..."
+          // );
+          if (today_advisories.length === 0) {
+            console.log("Generating advisory for", date);
+            generateAdvisory(landId, date);
+          }
         }
       }
     } catch (error) {
@@ -80,7 +85,7 @@ export default function Index() {
   };
 
   // Generate advisories
-  const generateAdvisory = async (landId: string) => {
+  const generateAdvisory = async (landId: string, date: string) => {
     setLoading(true);
     try {
       const response = await api.post("/generate_advisories", {
@@ -89,13 +94,15 @@ export default function Index() {
         rice_land_condition,
         rice_land_current_stage,
         rice_variety,
-        weatherData,
-        today,
+        weatherData: weatherData?.daily?.[currentDayIndex] || null,
+        date,
       });
+      
+      console.log("generateAdvisory response:", response.data);
 
       if (response.status === 200) {
         Alert.alert("Success", "Advisory has been generated successfully.");
-        fetchAdvisories(landId, true);
+        setAdvisories(response.data.advisories);
       } else {
         Alert.alert("Error", "Failed to generate advisory. Please try again.");
       }
@@ -117,7 +124,6 @@ export default function Index() {
     try {
       const response = await api.get(`/get_rice_land/${land_id}`);
       const data = response.data;
-      console.log(data);
       setRiceLandId(data.id);
       setRiceLandLat(data.rice_land_lat);
       setRiceLandLong(data.rice_land_long);
@@ -127,8 +133,7 @@ export default function Index() {
       setRiceVariety(data.rice_variety.rice_variety_name);
       setLoading(false);
 
-      // Fetch advisories after setting land details
-      fetchAdvisories(data.id);
+      fetchAdvisories(data.id, today);
     } catch (error) {
       console.error("Error fetching land details:", error);
       Alert.alert("Error", "Unable to fetch land details.");
@@ -162,23 +167,18 @@ export default function Index() {
     99: "Thunderstorm with heavy hail",
   };
 
-  // Fetch weather data
+  // Fetch 7-day forecast data
   const fetchWeatherData = async () => {
     setWeatherLoading(true);
     try {
       const response = await api.get(
-        `https://api.open-meteo.com/v1/forecast?latitude=${rice_land_lat}&longitude=${rice_land_long}&current_weather=true`
+        `https://api.open-meteo.com/v1/forecast?latitude=${rice_land_lat}&longitude=${rice_land_long}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=7&current_weather=true`
       );
 
-      const weather = response.data.current_weather;
-      setWeatherData(weather);
-
-      console.log(
-        `Weather Description: ${
-          weatherDescriptions[weather.weathercode] || "Unknown"
-        }`
-      );
-
+      setWeatherData({
+        daily: response.data.daily,
+        current: response.data.current_weather,
+      });
       setWeatherLoading(false);
     } catch (error) {
       console.error("Error fetching weather data:", error);
@@ -197,6 +197,14 @@ export default function Index() {
       fetchWeatherData();
     }
   }, [rice_land_lat, rice_land_long]);
+
+  // Fetch advisories when currentDayIndex changes
+  useEffect(() => {
+    if (weatherData?.daily?.time?.[currentDayIndex]) {
+      const date = weatherData.daily.time[currentDayIndex];
+      fetchAdvisories(rice_land_id, date);
+    }
+  }, [currentDayIndex, weatherData]);
 
   // Map weather codes to icons
   const getWeatherIcon = (weatherCode: number) => {
@@ -229,7 +237,21 @@ export default function Index() {
     return weatherIcons[weatherCode] || "weather-cloudy";
   };
 
-  const currentDate = new Date();
+  const handleNextDay = () => {
+    if (currentDayIndex < 6) {
+      setCurrentDayIndex(currentDayIndex + 1);
+    }
+  };
+
+  const handlePreviousDay = () => {
+    if (currentDayIndex > 0 || currentDayIndex === 0) {
+      setCurrentDayIndex(currentDayIndex - 1);
+    }
+  };
+
+  const currentDate = new Date(
+    weatherData?.daily?.time?.[currentDayIndex] || today
+  );
   const formattedDate = currentDate.toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
@@ -263,7 +285,7 @@ export default function Index() {
                   color={GlobalStyles.activityIndicator.color}
                 />
               </View>
-            ) : weatherData ? (
+            ) : weatherData?.daily ? (
               <>
                 <View
                   style={[
@@ -306,12 +328,16 @@ export default function Index() {
                         }}
                       >
                         <Icon
-                          name={getWeatherIcon(weatherData.weathercode)}
+                          name={getWeatherIcon(
+                            weatherData.daily.weathercode[currentDayIndex]
+                          )}
                           size={40}
                           color="#FFD700"
                         />
                         <Text style={[GlobalStyles.dataText, { fontSize: 28 }]}>
-                          {weatherData.temperature}°C
+                          {currentDayIndex === 0
+                            ? `${weatherData?.current?.temperature}°C`
+                            : `${weatherData?.daily?.temperature_2m_min?.[currentDayIndex]}°C`}
                         </Text>
                       </View>
                       <View>
@@ -344,9 +370,10 @@ export default function Index() {
                       { fontSize: 20, fontWeight: "bold", textAlign: "center" },
                     ]}
                   >
-                    {weatherData
-                      ? weatherDescriptions[weatherData.weathercode] ||
-                        "Unknown"
+                    {weatherData?.daily
+                      ? weatherDescriptions[
+                          weatherData.daily.weathercode[currentDayIndex]
+                        ] || "Unknown"
                       : "Loading..."}
                   </Text>
                   {advisories.length > 0 ? (
@@ -359,38 +386,35 @@ export default function Index() {
                     <Text>No advisories available</Text>
                   )}
                 </View>
-                {advisories.length > 0 && (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: "100%",
-                      gap: 10,
-                      marginTop: 20,
-                    }}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "100%",
+                    gap: 10,
+                    marginTop: 20,
+                  }}
+                >
+                  <Button
+                    icon="chevron-left"
+                    mode="contained"
+                    style={[GlobalStyles.button, { width: "30%" }]}
+                    onPress={handlePreviousDay}
+                    disabled={currentDayIndex === 0}
                   >
-                    <Button
-                      icon="chevron-left"
-                      mode="contained"
-                      style={[GlobalStyles.button, { width: "30%" }]}
-                    >
-                      <Link href={`/(rices)?rice_land_id=${land_id}`}>
-                        Next
-                      </Link>
-                    </Button>
-                    <Button
-                      icon="chevron-right"
-                      mode="contained"
-                      style={[GlobalStyles.button, { width: "30%" }]}
-                      contentStyle={{ flexDirection: "row-reverse" }} // ✅ Moves icon to the right
-                    >
-                      <Link href={`/(rices)?rice_land_id=${land_id}`}>
-                        Next
-                      </Link>
-                    </Button>
-                  </View>
-                )}
+                    Previous
+                  </Button>
+                  <Button
+                    icon="chevron-right"
+                    mode="contained"
+                    style={[GlobalStyles.button, { width: "30%" }]}
+                    onPress={handleNextDay}
+                    disabled={currentDayIndex === 6}
+                  >
+                    Next
+                  </Button>
+                </View>
               </>
             ) : (
               <Text>No data available</Text>

@@ -133,7 +133,9 @@ class AICoontroller extends Controller
 
     public function generate_advisories(Request $request)
     {
-        $date = $request->today;
+        $current_date = Carbon::now();
+
+        $date = $request->date;
         $rice_land_id = $request->rice_land_id;
         $rice_land_size = $request->rice_land_size;
         $rice_land_condition = $request->rice_land_condition;
@@ -143,13 +145,13 @@ class AICoontroller extends Controller
 
         // AI Prompt (Modified to return an array)
         $prompt = "You are an Agriculture Expert. Give advisories as an array based on the following rice land data: 
-        Land size: {$rice_land_size} hectares,
-        Land condition: {$rice_land_condition},
-        Rice growth stage: {$rice_land_current_stage},
-        Rice variety: {$rice_variety},
-        Weather temperature: {$weatherData} degree celsius.
+    Land size: {$rice_land_size} hectares,
+    Land condition: {$rice_land_condition},
+    Rice growth stage: {$rice_land_current_stage},
+    Rice variety: {$rice_variety},
+    Weather temperature: {$weatherData} degree celsius.
 
-        ONLY return the JSON, no extra text, no explanations.";
+    ONLY return the JSON, no extra text, no explanations.";
 
         try {
             // Call OpenAI API
@@ -212,16 +214,26 @@ class AICoontroller extends Controller
                 ], 500);
             }
 
-            // Store advisories in the database
-            $this->store_generated_advisories($rice_land_id, $advisories, $date);
+            // Check if the provided date matches the current date
+            if (Carbon::parse($date)->toDateString() === $current_date->toDateString()) {
+                // Ensure date is formatted correctly before storing
+                $formattedDate = Carbon::parse($date)->format('Y-m-d');
+                // Store advisories in the database
+                $this->store_generated_advisories($rice_land_id, $advisories, $formattedDate);
 
-            // Log success
-            Log::info('Generated Advisories:', $advisories);
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Advisories generated successfully.',
-            ], 200);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Advisories generated and saved successfully.',
+                    'advisories' => $advisories, // Return advisories for confirmation
+                ], 200);
+            } else {
+                // If the date is not today, return the advisories without saving
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Advisories generated successfully.',
+                    'advisories' => $advisories,
+                ], 200);
+            }
         } catch (\Exception $e) {
             Log::error('Exception in generate_advisories:', ['message' => $e->getMessage()]);
             return response()->json([

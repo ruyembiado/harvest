@@ -23,6 +23,7 @@ export default function Index() {
   const { riceLandId, setRiceLandId } = useRiceLand();
   const [placeName, setPlaceName] = React.useState<string>("Fetching place...");
   const [rice_land_name, setRiceLandName] = React.useState<string>("");
+  const [rice_variety_name, setRiceVarietyName] = React.useState<string>("");
   const [rice_land_lat, setRiceLandLat] = React.useState<string>("");
   const [rice_land_long, setRiceLandLong] = React.useState<string>("");
   const [rice_land_size, setRiceLandSize] = React.useState<string>("");
@@ -68,17 +69,14 @@ export default function Index() {
       if (response.data.status === "success") {
         console.log("Rice land stage updated successfully:", response.data);
       } else {
-        console.log(
-          "Failed to update rice land stage:",
-          response.data.message
-        );
+        console.log("Failed to update rice land stage:", response.data.message);
       }
     } catch (error) {
       console.error("Error updating rice growth stage:", error);
-      Alert.alert(
-        "Error",
-        "An error occurred while updating the rice land stage."
-      );
+      // Alert.alert(
+      //   "Error",
+      //   "An error occurred while updating the rice land stage."
+      // );
     }
   };
 
@@ -140,6 +138,7 @@ export default function Index() {
       setRiceLandSize(data.rice_land_size);
       setRiceLandCondition(data.rice_land_condition);
       setRiceLandStage(data.rice_land_current_stage);
+      setRiceVarietyName(data.rice_variety_name);
       update_rice_land_stage_today();
       setLoading(false);
     } catch (error) {
@@ -309,18 +308,20 @@ export default function Index() {
                     Rice Variety
                   </Link>
                 </Button>
-                <Button
-                  icon={getWeatherIcon(weatherData.weathercode)}
-                  mode="contained"
-                  style={[
-                    GlobalStyles.button,
-                    { width: "100%", backgroundColor: "#FBBC04" },
-                  ]}
-                >
-                  <Link href={`/(advisories)?land_id=${riceLandId}`}>
-                    Advisories
-                  </Link>
-                </Button>
+                {rice_variety_name !== null && rice_variety_name !== "" && (
+                  <Button
+                    icon={getWeatherIcon(weatherData.weathercode)}
+                    mode="contained"
+                    style={[
+                      GlobalStyles.button,
+                      { width: "100%", backgroundColor: "#FBBC04" },
+                    ]}
+                  >
+                    <Link href={`/(advisories)?land_id=${riceLandId}`}>
+                      Advisories
+                    </Link>
+                  </Button>
+                )}
               </>
             ) : (
               <Text>No data available</Text>

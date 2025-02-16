@@ -14,6 +14,8 @@ const WeatherScreen: React.FC = () => {
   const [rice_land_lat, setRiceLandLat] = useState<string | null>(null);
   const [rice_land_long, setRiceLandLong] = useState<string | null>(null);
   const [weatherData, setWeatherData] = useState<Array<any>>([]);
+  const [current_weather_temperature, setCurrentWeatherTemp] =
+    useState<any>(null);
 
   useEffect(() => {
     const fetchLandDetails = async () => {
@@ -50,13 +52,15 @@ const WeatherScreen: React.FC = () => {
     setWeatherLoading(true);
     try {
       const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${rice_land_lat}&longitude=${rice_land_long}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max,sunshine_duration,weathercode&timezone=auto`
+        `https://api.open-meteo.com/v1/forecast?latitude=${rice_land_lat}&longitude=${rice_land_long}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max,sunshine_duration,weathercode&timezone=auto&current_weather=true`
       );
       const data = await response.json();
 
       if (!data || !data.daily || !data.daily.time) {
         throw new Error("Invalid API response structure");
       }
+
+      setCurrentWeatherTemp(data.current_weather.temperature);
 
       const transformedData = data.daily.time.map((date, index) => ({
         date,
@@ -111,26 +115,29 @@ const WeatherScreen: React.FC = () => {
     return weatherIcons[code] || "weather-cloudy";
   };
 
+  const today = new Date().toISOString().split("T")[0];
+
   return (
     <PaperProvider theme={customTheme}>
       <View style={styles.container}>
         {landLoading || weatherLoading ? (
-          <ActivityIndicator
-            size="large"
-            color={GlobalStyles.activityIndicator.color}
-          />
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator
+              size="large"
+              color={GlobalStyles.activityIndicator.color}
+            />
+          </View>
         ) : (
           <FlatList
             data={weatherData}
-            style={{ padding: 10 }}
+            style={{ padding: 10, paddingTop: 10 }}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
-              <View style={styles.card}>
+              <View style={styles.Weathercard}>
                 <View style={styles.row}>
                   <Text style={styles.day}>{item.day}</Text>
                   <Text style={styles.date}>{item.date}</Text>
                 </View>
-
                 <View style={styles.row}>
                   <Icon
                     name={item.icon}
@@ -138,12 +145,20 @@ const WeatherScreen: React.FC = () => {
                     color="#FFD700"
                     style={styles.icon}
                   />
-                  <View style={styles.tempContainer}>
-                    <Text style={styles.highTemp}>{item.high}°C</Text>
-                    <Text style={styles.lowTemp}>{item.low}°C</Text>
-                  </View>
+                  {item.date === today && (
+                    <View style={styles.tempContainer}>
+                      <Text style={styles.highTemp}>
+                        🌡️{current_weather_temperature}°C
+                      </Text>
+                    </View>
+                  )}
                 </View>
-
+                <Text style={styles.info}>
+                  🌡️ Highest Temperature: {item.high}°C
+                </Text>
+                <Text style={styles.info}>
+                  🌡️ Lowest Temperature: {item.low}°C
+                </Text>
                 <Text style={styles.info}>🌬️ Wind: {item.wind}</Text>
                 <Text style={styles.info}>💧 Rain: {item.rain}</Text>
                 <Text style={styles.info}>☀️ Sunshine: {item.sun}</Text>
@@ -156,22 +171,28 @@ const WeatherScreen: React.FC = () => {
   );
 };
 
+export default WeatherScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
     backgroundColor: "#F5F5F5",
   },
-  card: {
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  Weathercard: {
     backgroundColor: "#FFF",
     borderRadius: 10,
     padding: 15,
     marginBottom: 15,
     elevation: 3,
-    shadowColor: "#000",
+    shadowColor: "#F9F9F9",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
-    shadowRadius: 3,
+    shadowRadius: 5,
     width: "100%",
   },
   row: {
@@ -212,5 +233,3 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 });
-
-export default WeatherScreen;

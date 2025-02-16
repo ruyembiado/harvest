@@ -12,6 +12,7 @@ import api from "../../services/api";
 import customTheme from "../../assets/styles/theme";
 import { Link, useRouter, useLocalSearchParams } from "expo-router";
 import getUserIdOrLogout from "@/hooks/getUserIdOrLogout";
+import CropDetails from "../../crop_types/CropDetails";
 
 const Index: React.FC = () => {
   const [riceVariety, setRiceVariety] = React.useState<any>(null);
@@ -88,7 +89,7 @@ const Index: React.FC = () => {
               >
                 {riceVariety ? (
                   <View key={riceVariety.id}>
-                    <ImageBackground
+                    {/* <ImageBackground
                       source={require("../../assets/images/rice-field.jpg")}
                       style={GlobalStyles.RiceLandItem}
                     >
@@ -96,11 +97,12 @@ const Index: React.FC = () => {
                       <Text style={GlobalStyles.RiceLandTitle}>
                         {riceVariety.rice_variety_name}
                       </Text>
-                    </ImageBackground>
+                    </ImageBackground> */}
+                    <CropDetails cropType={riceVariety.rice_variety_name} />
                   </View>
                 ) : (
                   <View style={[GlobalStyles.noDataTextContainer]}>
-                    <Text style={[GlobalStyles.noDataText]}>
+                    <Text style={[GlobalStyles.dataText]}>
                       No rice variety.
                     </Text>
                   </View>

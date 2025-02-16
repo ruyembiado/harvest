@@ -19,7 +19,7 @@ const globalStyles = StyleSheet.create({
     marginBottom: 20,
   },
   weatherIcon: {
-    width: 80, 
+    width: 80,
     height: 80,
   },
   weatherText: {
@@ -53,12 +53,12 @@ const globalStyles = StyleSheet.create({
     gap: 10,
   },
 
-  mainDetailContainer : {
+  mainDetailContainer: {
     backgroundColor: '#ffff',
-    shadowColor: '#FFD700',     
-    shadowOffset: { width: 0, height: 4 },  
-    shadowOpacity: 0.5,      
-    shadowRadius: 10,       
+    shadowColor: '#FFD700',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
     borderRadius: 30,
     width: "100%",
     paddingHorizontal: 20,
@@ -201,7 +201,33 @@ const globalStyles = StyleSheet.create({
   },
   TermsButtonContainer: {
     paddingTop: 50,
-  }
+  },
+
+  stageContainer: {
+
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 0,
+  },
+  circle: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    marginRight: 10,
+  },
+
+  Weathercard: {
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 15,
+    elevation: 3,
+    shadowColor: "#F9F9F9",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    width: "100%",
+  },
 });
 
 export default globalStyles;

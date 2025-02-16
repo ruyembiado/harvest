@@ -50,4 +50,5 @@ Route::post('/generate_advisories', [AICoontroller::class, 'generate_advisories'
 Route::get('/get_rice_growth_stages/{rice_land_id}', [RiceGrowthStageController::class, 'get_rice_land_stages_by_land_id']);
 
 // Advisories
-Route::get('/get_advisories_today/{rice_land_id}', [AdvisoryController::class, 'get_advisories_today']);
+Route::get('/get_advisories_today/{rice_land_id}/{date}', [AdvisoryController::class, 'get_advisories_today_by_land_id']);
+Route::get('/get_all_advisories/{rice_land_id}', [AdvisoryController::class, 'get_all_advisories_by_land_id']);
