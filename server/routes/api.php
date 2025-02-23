@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\AdvisoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AICoontroller;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\NoteController;
+use App\Http\Controllers\AdvisoryController;
 use App\Http\Controllers\RiceLandController;
 use App\Http\Controllers\RiceVarietyController;
 use App\Http\Controllers\RiceGrowthStageController;
@@ -52,3 +53,7 @@ Route::get('/get_rice_growth_stages/{rice_land_id}', [RiceGrowthStageController:
 // Advisories
 Route::get('/get_advisories_today/{rice_land_id}/{date}', [AdvisoryController::class, 'get_advisories_today_by_land_id']);
 Route::get('/get_all_advisories/{rice_land_id}', [AdvisoryController::class, 'get_all_advisories_by_land_id']);
+
+// Notes
+Route::get('/get_notes/{rice_land_id}', [NoteController::class, 'index']);
+Route::post('/add_note', [NoteController::class, 'store']);

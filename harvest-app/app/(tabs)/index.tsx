@@ -214,7 +214,7 @@ export default function Index() {
       <View
         style={[
           GlobalStyles.container,
-          { alignItems: "center", justifyContent: "flex-start" },
+          { alignItems: "center", justifyContent: "center" },
         ]}
       >
         {loading ? (

@@ -57,7 +57,7 @@ const Index: React.FC = () => {
                 </Text>
               </View>
               <Button disabled={!checkbox} mode="contained">
-                <Link href="/(lands)" style={{ color: "white" }}>
+                <Link href="/(languages)" style={{ color: "white" }}>
                   Continue
                 </Link>
               </Button>

@@ -21,9 +21,14 @@ const Index: React.FC = () => {
 
   useEffect(() => {
     const loadAuth = async () => {
-      const storedToken = await AsyncStorage.getItem("authToken");
-      if (storedToken) {
-        router.replace("/(lands)");
+      try {
+        const storedToken = await AsyncStorage.getItem("authToken");
+        const storedLang = await AsyncStorage.getItem("selectedLanguage");
+        if (storedToken) {
+          router.replace(storedLang ? "/(lands)" : "/(languages)");
+        }
+      } catch (error) {
+        console.error("Error loading auth:", error);
       }
     };
     loadAuth();

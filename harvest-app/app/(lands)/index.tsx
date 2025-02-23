@@ -29,6 +29,9 @@ const Index: React.FC = () => {
   const fetchRiceLands = async () => {
     try {
 
+      const storedLanguage = await AsyncStorage.getItem("selectedLanguage");
+      console.log("Selected Language:", storedLanguage);
+
       const user_id = await getUserIdOrLogout(router);
       if (!user_id) {
         return;
@@ -200,7 +203,7 @@ const Index: React.FC = () => {
                   ))
                 ) : (
                   <View style={[GlobalStyles.noDataTextContainer]}>
-                    <Text style={[GlobalStyles.noDataText]}>
+                    <Text style={[GlobalStyles.dataText]}>
                       No rice lands available.
                     </Text>
                   </View>

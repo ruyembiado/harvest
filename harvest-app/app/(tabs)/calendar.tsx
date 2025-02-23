@@ -147,7 +147,8 @@ const CalendarScreen: React.FC = () => {
                 ? {
                     [selectedDate]: {
                       selected: true,
-                      selectedColor: "#00adf5",
+                      selectedColor: "#000",
+                      
                     },
                   }
                 : {}),
